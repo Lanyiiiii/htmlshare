@@ -1,0 +1,1539 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>星源 AgentKit 新产品立项评审</title>
+  <style>
+    :root {
+      --ink: #111827;
+      --muted: #667085;
+      --paper: #f5f7fb;
+      --white: #fff;
+      --line: #d7deea;
+      --blue: #246bfe;
+      --green: #15896a;
+      --amber: #b7791f;
+      --violet: #6f4bd8;
+      --red: #c24135;
+      --dark: #172033;
+      --shadow: 0 18px 50px rgba(17, 24, 39, .14);
+      --r: 8px;
+    }
+
+    * { box-sizing: border-box; }
+    html { height: 100%; scroll-behavior: smooth; scroll-snap-type: y mandatory; }
+    body {
+      margin: 0;
+      min-height: 100%;
+      color: var(--ink);
+      background:
+        linear-gradient(90deg, rgba(36,107,254,.055) 1px, transparent 1px),
+        linear-gradient(180deg, rgba(36,107,254,.055) 1px, transparent 1px),
+        var(--paper);
+      background-size: 40px 40px;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", Arial, sans-serif;
+      letter-spacing: 0;
+    }
+
+    .progress { position: fixed; inset: 0 0 auto 0; z-index: 20; height: 4px; background: #dce3ee; }
+    .bar { width: 0; height: 100%; background: linear-gradient(90deg, var(--blue), var(--green), var(--amber)); transition: width .18s ease; }
+    .counter {
+      position: fixed; right: 22px; bottom: 18px; z-index: 20;
+      padding: 7px 12px; border: 1px solid var(--line); border-radius: 999px;
+      background: rgba(255,255,255,.92); color: var(--muted); font-size: 13px;
+      font-variant-numeric: tabular-nums;
+    }
+    .nav { position: fixed; right: 20px; top: 50%; transform: translateY(-50%); z-index: 20; display: grid; gap: 9px; }
+    .dot { width: 10px; height: 10px; border: 0; border-radius: 50%; padding: 0; cursor: pointer; background: #b9c3d3; }
+    .dot.active { background: var(--blue); box-shadow: 0 0 0 5px rgba(36,107,254,.14); }
+
+    .slide {
+      min-height: 100vh;
+      padding: 34px 54px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      scroll-snap-align: start;
+    }
+    .frame {
+      width: min(1220px, 100%);
+      min-height: min(690px, calc(100vh - 68px));
+      background: rgba(255,255,255,.96);
+      border: 1px solid rgba(215,222,234,.96);
+      border-radius: var(--r);
+      box-shadow: var(--shadow);
+      padding: 34px 42px 30px;
+      display: grid;
+      grid-template-rows: auto auto 1fr auto;
+      gap: 18px;
+      position: relative;
+      overflow: hidden;
+    }
+    .frame::before {
+      content: "";
+      position: absolute; left: 0; top: 0; bottom: 0; width: 8px;
+      background: linear-gradient(180deg, var(--blue), var(--green), var(--amber));
+    }
+
+    .crumb {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 14px;
+      align-items: start;
+      color: var(--muted);
+      font-size: 13px;
+    }
+    .code {
+      height: 30px; min-width: 72px; padding: 0 10px;
+      display: inline-flex; align-items: center; justify-content: center;
+      background: #edf3ff; color: var(--blue); border-radius: 999px;
+      font-weight: 800; letter-spacing: .4px;
+    }
+    .path { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; line-height: 1.55; }
+    .path b { color: var(--ink); }
+    .path span:not(:last-child)::after { content: "/"; color: #a3adbd; margin-left: 8px; }
+
+    h1, h2, h3, p { margin: 0; }
+    h1 { font-size: clamp(48px, 6vw, 78px); line-height: 1.08; letter-spacing: 0; }
+    h2 {
+      font-size: clamp(27px, 2.7vw, 34px);
+      line-height: 1.16;
+      letter-spacing: 0;
+      max-width: none;
+      white-space: nowrap;
+    }
+    .title-stack {
+      display: grid;
+      gap: 6px;
+    }
+    .title-stack span {
+      display: block;
+    }
+    .title-stack em {
+      display: block;
+      color: var(--blue);
+      font-family: "SFMono-Regular", "Cascadia Code", "JetBrains Mono", Consolas, monospace;
+      font-size: clamp(17px, 1.7vw, 23px);
+      font-style: normal;
+      font-weight: 750;
+      letter-spacing: .2px;
+    }
+    .subtitle { color: var(--muted); font-size: 20px; line-height: 1.55; max-width: 930px; }
+
+    .footer {
+      display: flex; justify-content: space-between; gap: 18px; align-items: center;
+      color: var(--muted); font-size: 13px; padding-top: 6px;
+    }
+    .tag {
+      display: inline-flex; align-items: center; justify-content: center;
+      min-height: 28px; padding: 0 10px; border-radius: 999px;
+      background: #f0f5ff; color: var(--blue); font-size: 12px; font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .grid { display: grid; gap: 16px; }
+    .cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .cols-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    .split { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; align-items: stretch; }
+    .intro-split { grid-template-columns: 1.2fr .8fr; gap: 18px; }
+
+    .box {
+      border: 1px solid var(--line);
+      background: var(--white);
+      border-radius: var(--r);
+      padding: 18px;
+      min-height: 120px;
+    }
+    .box b { display: block; font-size: 18px; line-height: 1.35; margin-bottom: 8px; }
+    .box p { color: var(--muted); font-size: 15px; line-height: 1.5; }
+    .blue { border-top: 4px solid var(--blue); }
+    .green { border-top: 4px solid var(--green); }
+    .amber { border-top: 4px solid var(--amber); }
+    .violet { border-top: 4px solid var(--violet); }
+    .red { border-top: 4px solid var(--red); }
+
+    .bigline {
+      margin-top: 4px;
+      padding: 22px 26px;
+      border-left: 5px solid var(--blue);
+      background: #f0f5ff;
+      border-radius: var(--r);
+      font-size: 25px;
+      line-height: 1.42;
+      font-weight: 850;
+    }
+
+    .flow {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 18px;
+      align-items: stretch;
+    }
+    .flow.cols-3 {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+    .step {
+      position: relative;
+      min-height: 150px;
+      padding: 20px 18px;
+      border: 1px solid var(--line);
+      border-radius: var(--r);
+      background: linear-gradient(180deg, #fff, #f9fbff);
+    }
+    .step:not(:last-child)::after {
+      content: "";
+      position: absolute; right: -14px; top: 50%;
+      width: 20px; height: 20px;
+      border-top: 3px solid var(--blue); border-right: 3px solid var(--blue);
+      transform: translateY(-50%) rotate(45deg);
+      background: transparent;
+    }
+    .num { color: var(--blue); font-size: 13px; font-weight: 900; letter-spacing: 1px; margin-bottom: 12px; }
+    .step b { display: block; font-size: 20px; margin-bottom: 9px; }
+    .step span { display: block; color: var(--muted); font-size: 15px; line-height: 1.48; }
+    .step ul {
+      margin: 0;
+      padding-left: 18px;
+      color: var(--muted);
+      font-size: 15px;
+      line-height: 1.48;
+    }
+    .step li { margin: 0 0 7px; }
+    .step.linked {
+      border-color: rgba(111,75,216,.35);
+      background: linear-gradient(180deg, #f5f1ff, #fff);
+    }
+    .step.linked .num {
+      color: var(--violet);
+    }
+    .step.linked::before {
+      content: "配套服务费用";
+      position: absolute;
+      right: 12px;
+      top: 10px;
+      padding: 4px 8px;
+      border-radius: 999px;
+      background: var(--violet);
+      color: #fff;
+      font-size: 11px;
+      font-weight: 850;
+    }
+
+    .stack { display: grid; gap: 10px; }
+    .layer {
+      display: grid;
+      grid-template-columns: 152px 1fr;
+      align-items: center;
+      gap: 14px;
+      border: 1px solid var(--line);
+      border-radius: var(--r);
+      background: var(--white);
+      padding: 13px 16px;
+    }
+    .layer b { color: var(--blue); font-size: 15px; }
+    .layer span { color: var(--muted); font-size: 15px; line-height: 1.45; }
+
+    .map {
+      height: 100%;
+      min-height: 430px;
+      border: 1px solid var(--line);
+      border-radius: var(--r);
+      background:
+        radial-gradient(circle at 20% 25%, rgba(36,107,254,.13), transparent 28%),
+        radial-gradient(circle at 78% 70%, rgba(21,137,106,.13), transparent 28%),
+        #fff;
+      display: grid;
+      place-items: center;
+      padding: 22px;
+    }
+    .hub {
+      width: 100%;
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+      align-items: center;
+    }
+    .hub-center {
+      grid-column: 2;
+      grid-row: 1 / span 2;
+      min-height: 180px;
+      display: grid; place-items: center; text-align: center;
+      background: var(--dark); color: #fff; border-radius: var(--r); padding: 20px;
+    }
+    .hub-center b { font-size: 24px; }
+    .chip {
+      min-height: 92px;
+      border: 1px solid var(--line);
+      border-radius: var(--r);
+      background: rgba(255,255,255,.92);
+      padding: 16px;
+      display: grid;
+      align-content: center;
+    }
+    .chip b { display: block; font-size: 16px; margin-bottom: 6px; }
+    .chip span { color: var(--muted); font-size: 13px; line-height: 1.35; }
+
+    .arch-visual {
+      height: 100%;
+      min-height: 430px;
+      border: 1px solid var(--line);
+      border-radius: var(--r);
+      background:
+        linear-gradient(135deg, rgba(255, 84, 72, .10), rgba(36,107,254,.05)),
+        #fff;
+      padding: 16px;
+      display: grid;
+      place-items: center;
+      overflow: hidden;
+      position: relative;
+    }
+    .arch-visual::after {
+      content: "";
+      position: absolute;
+      inset: 16px;
+      border: 1px solid rgba(255, 116, 92, .20);
+      border-radius: 6px;
+      pointer-events: none;
+    }
+    .platform-svg {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      height: 100%;
+      min-height: 398px;
+      display: block;
+      font-family: inherit;
+    }
+    .platform-diagram {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      height: 100%;
+      min-height: 398px;
+      display: grid;
+      grid-template-columns: .78fr 1fr 1.18fr;
+      grid-template-rows: 1fr 1fr .92fr 36px 36px;
+      gap: 10px;
+      align-items: stretch;
+    }
+    .pd-card {
+      border: 1px solid #f2c7bd;
+      border-radius: 8px;
+      background: rgba(255,255,255,.92);
+      box-shadow: 0 10px 26px rgba(255, 91, 75, .08);
+      padding: 10px;
+      display: grid;
+      align-content: center;
+      justify-items: center;
+      text-align: center;
+      gap: 6px;
+      color: var(--ink);
+      position: relative;
+    }
+    .pd-card b {
+      font-size: 14px;
+      line-height: 1.2;
+    }
+    .pd-card span {
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 1.25;
+    }
+    .pd-head {
+      width: calc(100% + 20px);
+      margin: -10px -10px 2px;
+      padding: 6px 8px;
+      border-radius: 8px 8px 0 0;
+      background: linear-gradient(90deg, #ffefed, #fff4ee);
+      color: #b84234;
+      font-size: 13px;
+      font-weight: 900;
+    }
+    .pd-icon {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(135deg, #ff3f3a, #ff9864);
+      color: #fff;
+      font-size: 22px;
+      font-weight: 900;
+    }
+    .pd-person {
+      min-height: 94px;
+      background: transparent;
+      border-color: transparent;
+      box-shadow: none;
+    }
+    .pd-person.user { grid-column: 1; grid-row: 1; }
+    .pd-person.dev { grid-column: 1; grid-row: 3; }
+    .pd-agent { grid-column: 2; grid-row: 1 / span 2; min-height: 150px; }
+    .pd-model { grid-column: 2; grid-row: 3; min-height: 90px; }
+    .pd-runtime {
+      grid-column: 3;
+      grid-row: 1 / span 2;
+      padding: 10px 12px;
+      gap: 8px;
+    }
+    .pd-components {
+      grid-column: 3;
+      grid-row: 3;
+      padding: 10px 12px;
+      gap: 8px;
+    }
+    .pd-pill-grid {
+      width: 100%;
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+    }
+    .pd-pill-list {
+      width: 100%;
+      display: grid;
+      gap: 8px;
+    }
+    .pd-components .pd-pill-list {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 7px;
+    }
+    .pd-pill {
+      min-height: 30px;
+      border-radius: 6px;
+      background: linear-gradient(135deg, #ff3f3a, #ff9161);
+      color: #fff;
+      font-size: 11px;
+      font-weight: 850;
+      display: grid;
+      place-items: center;
+      padding: 6px 8px;
+      white-space: nowrap;
+    }
+    .pd-subbox {
+      width: 100%;
+      border: 1px dashed #f0b6aa;
+      border-radius: 8px;
+      padding: 8px;
+      display: grid;
+      gap: 7px;
+    }
+    .pd-subbox b {
+      font-size: 13px;
+      color: var(--ink);
+    }
+    .pd-bar {
+      grid-column: 2 / span 2;
+      min-height: 36px;
+      border-radius: 8px;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(90deg, #ffe7e4, #fff3e8);
+      border: 1px solid #f3c3ba;
+      color: #7b4a42;
+      font-weight: 850;
+      font-size: 13px;
+    }
+    .pd-eval { grid-row: 4; }
+    .pd-obs { grid-row: 5; }
+    .pd-arrow {
+      display: none;
+      position: absolute;
+      color: #ef6254;
+      font-size: 18px;
+      font-weight: 900;
+      display: grid;
+      place-items: center;
+      pointer-events: none;
+    }
+    .pd-arrow.dev-agent { left: 22%; top: 52%; }
+    .pd-arrow.agent-runtime { left: 46%; top: 48%; }
+    .pd-arrow.agent-model { left: 34%; top: 68%; transform: rotate(90deg); }
+    .pd-arrow.components { right: 22%; top: 48%; }
+
+    .matrix {
+      display: grid;
+      grid-template-columns: 180px repeat(4, 1fr);
+      border: 1px solid var(--line);
+      border-radius: var(--r);
+      overflow: hidden;
+      background: #fff;
+    }
+    .cell {
+      min-height: 70px;
+      padding: 12px;
+      border-right: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+      display: grid; align-content: center;
+      color: var(--muted); font-size: 14px; line-height: 1.35;
+    }
+    .cell.head { background: #eef4ff; color: var(--ink); font-weight: 850; }
+    .cell.good { background: #f1fbf7; color: var(--green); font-weight: 850; }
+    .cell.warn { background: #fff8ec; color: var(--amber); font-weight: 850; }
+    .cell.hot { background: #f3f0ff; color: var(--violet); font-weight: 850; }
+    .cell:nth-child(5n) { border-right: 0; }
+    .cell:nth-last-child(-n+5) { border-bottom: 0; }
+    .competitive-matrix {
+      grid-template-columns: 150px repeat(4, 1fr);
+    }
+    .competitive-matrix .cell {
+      min-height: 62px;
+      padding: 10px 11px;
+      font-size: 13px;
+      line-height: 1.32;
+    }
+    .competitive-matrix .cell.head {
+      font-size: 14px;
+    }
+    .cost-table {
+      display: grid;
+      border: 1px solid var(--line);
+      border-radius: var(--r);
+      overflow: hidden;
+      background: #fff;
+    }
+    .cost-row {
+      display: grid;
+      grid-template-columns: 1.05fr 2fr;
+      border-bottom: 1px solid var(--line);
+    }
+    .cost-row:last-child {
+      border-bottom: 0;
+    }
+    .cost-cell {
+      min-height: 58px;
+      padding: 12px 14px;
+      display: grid;
+      align-content: center;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.38;
+      border-right: 1px solid var(--line);
+    }
+    .cost-cell:last-child {
+      border-right: 0;
+    }
+    .cost-row.head .cost-cell {
+      min-height: 50px;
+      background: #eef4ff;
+      color: var(--ink);
+      font-weight: 850;
+      font-size: 15px;
+    }
+    .cost-cell.strategy {
+      background: #f1fbf7;
+      color: var(--green);
+      font-weight: 850;
+    }
+    .estimate-kpis {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+    }
+    .estimate-kpi {
+      border: 1px solid var(--line);
+      border-radius: var(--r);
+      background: #fff;
+      padding: 16px 18px;
+      display: grid;
+      gap: 6px;
+    }
+    .estimate-kpi span {
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 750;
+    }
+    .estimate-kpi b {
+      font-size: 32px;
+      line-height: 1.1;
+      color: var(--blue);
+      font-variant-numeric: tabular-nums;
+    }
+    .estimate-kpi strong {
+      color: var(--ink);
+      font-size: 13px;
+      line-height: 1.35;
+      font-weight: 750;
+    }
+    .estimate-layout {
+      display: grid;
+      grid-template-columns: .95fr 1.05fr;
+      gap: 16px;
+      align-items: stretch;
+    }
+    .assumption-card {
+      border: 1px solid var(--line);
+      border-radius: var(--r);
+      background: #fff;
+      padding: 17px 18px;
+      display: grid;
+      gap: 12px;
+    }
+    .assumption-card b {
+      font-size: 18px;
+    }
+    .assumption-card ul {
+      margin: 0;
+      padding-left: 18px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.45;
+    }
+    .assumption-card li { margin-bottom: 7px; }
+    .estimate-table {
+      display: grid;
+      border: 1px solid var(--line);
+      border-radius: var(--r);
+      overflow: hidden;
+      background: #fff;
+    }
+    .estimate-row {
+      display: grid;
+      grid-template-columns: 1.05fr 1.25fr .8fr .85fr;
+      border-bottom: 1px solid var(--line);
+    }
+    .estimate-row:last-child { border-bottom: 0; }
+    .estimate-cell {
+      min-height: 58px;
+      padding: 10px 12px;
+      border-right: 1px solid var(--line);
+      display: grid;
+      align-content: center;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.35;
+    }
+    .estimate-cell:last-child { border-right: 0; }
+    .estimate-row.head .estimate-cell {
+      background: #eef4ff;
+      color: var(--ink);
+      font-weight: 850;
+    }
+    .estimate-row.total .estimate-cell {
+      background: #f1fbf7;
+      color: var(--green);
+      font-weight: 900;
+      font-size: 15px;
+    }
+    .pain-matrix .cell {
+      min-height: 86px;
+      padding: 10px 11px;
+      font-size: 13px;
+      line-height: 1.34;
+    }
+    .pain-matrix .cell.head {
+      font-size: 14px;
+    }
+
+    .roadmap {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 14px;
+    }
+    .phase {
+      min-height: 300px;
+      border: 1px solid var(--line);
+      border-radius: var(--r);
+      background: #fff;
+      padding: 18px;
+      position: relative;
+    }
+    .phase::before { content: ""; position: absolute; inset: 0 18px auto; height: 4px; background: var(--blue); }
+    .phase:nth-child(2)::before { background: var(--green); }
+    .phase:nth-child(3)::before { background: var(--amber); }
+    .phase:nth-child(4)::before { background: var(--violet); }
+    .phase b { display: block; font-size: 18px; margin-bottom: 14px; }
+    .mini { display: grid; gap: 8px; }
+    .mini span {
+      display: block; padding: 8px 10px; border-radius: 6px;
+      background: #f6f8fb; color: var(--muted); font-size: 13px; line-height: 1.35;
+    }
+    .release-strip {
+      display: grid;
+      grid-template-columns: 1.1fr repeat(3, minmax(0, 1fr));
+      gap: 12px;
+      align-items: stretch;
+    }
+    .release-goal {
+      border-radius: var(--r);
+      background: linear-gradient(135deg, #1f5fff, #15896a);
+      color: #fff;
+      padding: 16px 18px;
+      display: grid;
+      align-content: center;
+      gap: 6px;
+    }
+    .release-goal b {
+      font-size: 24px;
+      line-height: 1.1;
+    }
+    .release-goal span {
+      font-size: 13px;
+      line-height: 1.45;
+      opacity: .9;
+    }
+    .release-case {
+      border: 1px solid var(--line);
+      border-radius: var(--r);
+      background: #fff;
+      padding: 14px 14px 13px;
+      display: grid;
+      gap: 7px;
+      align-content: start;
+    }
+    .release-case b {
+      font-size: 15px;
+      line-height: 1.3;
+    }
+    .release-case span {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.42;
+    }
+    .phase.release-phase {
+      min-height: 315px;
+      padding: 16px 14px 14px;
+    }
+    .phase.release-phase b {
+      margin-bottom: 10px;
+      font-size: 17px;
+      line-height: 1.28;
+    }
+    .mini.compact span {
+      padding: 7px 9px;
+      font-size: 12px;
+      line-height: 1.32;
+    }
+
+    .swimlane {
+      display: grid;
+      grid-template-columns: 135px repeat(4, 1fr);
+      gap: 10px;
+      align-items: stretch;
+    }
+    .lane-label {
+      display: grid; place-items: center;
+      border-radius: var(--r); background: #eef4ff; color: var(--blue); font-weight: 850;
+      min-height: 62px; padding: 10px; text-align: center;
+    }
+    .lane-item {
+      min-height: 62px;
+      border: 1px solid var(--line);
+      border-radius: var(--r);
+      background: #fff;
+      padding: 12px;
+      display: grid; align-content: center;
+      color: var(--muted); font-size: 14px; line-height: 1.35;
+    }
+    .lane-item b { color: var(--ink); font-size: 15px; }
+
+    .risk {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 16px;
+    }
+    .risk-card {
+      min-height: 210px;
+      border: 1px solid var(--line);
+      border-radius: var(--r);
+      background: #fff;
+      padding: 18px;
+      display: grid;
+      grid-template-rows: auto auto 1fr;
+      gap: 12px;
+    }
+    .risk-card b { font-size: 20px; }
+    .risk-card .badge {
+      justify-self: start; padding: 5px 9px; border-radius: 999px;
+      background: #f0f5ff; color: var(--blue); font-size: 12px; font-weight: 850;
+    }
+    .risk-card p { color: var(--muted); font-size: 15px; line-height: 1.45; }
+    .risk-compliance {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+      align-items: stretch;
+    }
+    .risk-section {
+      border: 1px solid var(--line);
+      border-radius: var(--r);
+      background: #fff;
+      overflow: hidden;
+      display: grid;
+      grid-template-rows: auto 1fr;
+    }
+    .risk-title {
+      padding: 14px 16px;
+      background: #eef4ff;
+      border-bottom: 1px solid var(--line);
+    }
+    .risk-title b {
+      display: block;
+      font-size: 19px;
+      line-height: 1.25;
+    }
+    .risk-title span {
+      display: block;
+      margin-top: 4px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+    .risk-items {
+      display: grid;
+      gap: 9px;
+      padding: 12px;
+    }
+    .risk-item {
+      border: 1px solid #e2e8f3;
+      border-radius: 7px;
+      padding: 10px 11px;
+      background: #fbfcff;
+    }
+    .risk-item b {
+      display: block;
+      color: var(--ink);
+      font-size: 14px;
+      line-height: 1.3;
+      margin-bottom: 5px;
+    }
+    .risk-item span {
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.45;
+    }
+    .risk-item.good {
+      background: #f1fbf7;
+      border-color: #cdece0;
+    }
+    .risk-item.good b {
+      color: var(--green);
+    }
+    .risk-control-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 14px;
+      align-items: stretch;
+    }
+    .risk-control-grid.three {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+    .risk-control-card {
+      border: 1px solid var(--line);
+      border-radius: var(--r);
+      background: #fff;
+      padding: 16px 15px;
+      display: grid;
+      gap: 10px;
+      align-content: start;
+      min-height: 270px;
+      position: relative;
+      overflow: hidden;
+    }
+    .risk-control-card::before {
+      content: "";
+      position: absolute;
+      inset: 0 0 auto 0;
+      height: 4px;
+      background: var(--blue);
+    }
+    .risk-control-card:nth-child(2)::before { background: var(--green); }
+    .risk-control-card:nth-child(3)::before { background: var(--amber); }
+    .risk-control-card:nth-child(4)::before { background: var(--violet); }
+    .risk-control-card .badge {
+      justify-self: start;
+      padding: 5px 9px;
+      border-radius: 999px;
+      background: #f0f5ff;
+      color: var(--blue);
+      font-size: 12px;
+      font-weight: 850;
+    }
+    .risk-control-card:nth-child(2) .badge { background: #f1fbf7; color: var(--green); }
+    .risk-control-card:nth-child(3) .badge { background: #fff8ec; color: var(--amber); }
+    .risk-control-card:nth-child(4) .badge { background: #f3f0ff; color: var(--violet); }
+    .risk-control-card b {
+      display: block;
+      font-size: 18px;
+      line-height: 1.28;
+    }
+    .risk-control-card ul {
+      margin: 0;
+      padding-left: 18px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.45;
+    }
+    .risk-control-card li {
+      margin-bottom: 7px;
+    }
+    .risk-answer {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+    }
+    .answer-pill {
+      border-radius: var(--r);
+      border: 1px solid var(--line);
+      background: #fbfcff;
+      padding: 12px 14px;
+      display: grid;
+      gap: 5px;
+    }
+    .answer-pill b {
+      color: var(--green);
+      font-size: 16px;
+    }
+    .answer-pill span {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.42;
+    }
+    .evidence-strip {
+      display: grid;
+      grid-template-columns: 132px 1fr;
+      gap: 10px;
+      align-items: stretch;
+      border: 1px solid var(--line);
+      border-radius: var(--r);
+      overflow: hidden;
+      background: #fff;
+    }
+    .evidence-label {
+      display: grid;
+      place-items: center;
+      padding: 10px;
+      background: #f3f0ff;
+      color: var(--violet);
+      font-weight: 850;
+      text-align: center;
+      font-size: 14px;
+    }
+    .evidence-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+      padding: 10px;
+    }
+    .evidence-list span {
+      padding: 6px 9px;
+      border-radius: 999px;
+      background: #f6f8fb;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 750;
+    }
+
+    .scenario-grid {
+      display: grid;
+      grid-template-columns: 1.1fr .9fr;
+      gap: 20px;
+      align-items: stretch;
+    }
+    .scenario-arch {
+      min-height: 430px;
+      border: 1px solid var(--line);
+      border-radius: var(--r);
+      background:
+        radial-gradient(circle at 18% 18%, rgba(36,107,254,.11), transparent 30%),
+        radial-gradient(circle at 84% 78%, rgba(21,137,106,.12), transparent 28%),
+        #fff;
+      padding: 18px;
+      display: grid;
+      align-content: center;
+      gap: 12px;
+    }
+    .arch-row {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+      align-items: stretch;
+    }
+    .arch-row.three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .arch-node {
+      min-height: 76px;
+      border: 1px solid var(--line);
+      border-radius: var(--r);
+      background: rgba(255,255,255,.94);
+      display: grid;
+      place-items: center;
+      text-align: center;
+      padding: 10px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.35;
+      position: relative;
+    }
+    .arch-node b {
+      display: block;
+      color: var(--ink);
+      font-size: 15px;
+      margin-bottom: 4px;
+    }
+    .arch-node.core {
+      background: var(--dark);
+      border-color: var(--dark);
+      color: rgba(255,255,255,.78);
+    }
+    .arch-node.core b { color: #fff; font-size: 18px; }
+    .arch-band {
+      min-height: 58px;
+      border-radius: var(--r);
+      background: #eef4ff;
+      color: var(--blue);
+      font-weight: 850;
+      display: grid;
+      place-items: center;
+      text-align: center;
+      padding: 10px 12px;
+      font-size: 15px;
+    }
+    .usage-list {
+      display: grid;
+      gap: 10px;
+    }
+    .usage-item {
+      border: 1px solid var(--line);
+      border-radius: var(--r);
+      background: #fff;
+      padding: 13px 14px;
+      display: grid;
+      gap: 5px;
+    }
+    .usage-item b { font-size: 15px; color: var(--ink); }
+    .usage-item span { color: var(--muted); font-size: 13px; line-height: 1.38; }
+    .module-card {
+      border-color: rgba(36,107,254,.34);
+      background: linear-gradient(180deg, #f2f6ff, #fff);
+      box-shadow: inset 0 0 0 1px rgba(36,107,254,.05);
+    }
+    .module-card b {
+      color: var(--blue);
+    }
+    .module-badges {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 8px;
+    }
+    .usage-item .module-badge {
+      min-height: 30px;
+      padding: 6px 10px;
+      border-radius: 6px;
+      background: var(--blue);
+      color: #fff;
+      font-size: 12px;
+      font-weight: 900;
+      line-height: 1.2;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      white-space: nowrap;
+      box-shadow: inset 0 -1px 0 rgba(0,0,0,.14);
+    }
+    .pd-components .pd-pill {
+      min-height: 27px;
+      padding: 5px 6px;
+    }
+    .usage-item .module-badge.green { background: var(--green); color: #fff; }
+    .usage-item .module-badge.amber { background: var(--amber); color: #fff; }
+    .usage-item .module-badge.violet { background: var(--violet); color: #fff; }
+
+    @media (max-width: 900px) {
+      .slide { padding: 22px 16px; }
+      .frame { padding: 28px 24px; min-height: calc(100vh - 44px); }
+      .nav { display: none; }
+      .cols-2, .cols-3, .cols-4, .split, .flow, .hub, .roadmap, .risk, .risk-compliance, .risk-control-grid, .risk-control-grid.three, .risk-answer, .release-strip, .estimate-kpis, .estimate-layout, .scenario-grid, .arch-row, .arch-row.three { grid-template-columns: 1fr; }
+      .step:not(:last-child)::after { display: none; }
+      .matrix, .swimlane { grid-template-columns: 1fr; }
+      .evidence-strip { grid-template-columns: 1fr; }
+      .estimate-row { grid-template-columns: 1fr; }
+      .estimate-cell { border-right: 0; }
+      .cost-row { grid-template-columns: 1fr; }
+      .cost-cell { border-right: 0; border-bottom: 1px solid var(--line); }
+      .cost-cell:last-child { border-bottom: 0; }
+      .cell:nth-child(n), .cell { border-right: 0; }
+      .hub-center { grid-column: auto; grid-row: auto; }
+      .layer { grid-template-columns: 1fr; }
+      .platform-diagram {
+        grid-template-columns: 1fr;
+        grid-template-rows: none;
+        height: auto;
+      }
+      .pd-person.user, .pd-person.dev, .pd-agent, .pd-model, .pd-runtime, .pd-components, .pd-bar {
+        grid-column: auto;
+        grid-row: auto;
+      }
+      .pd-arrow { display: none; }
+    }
+
+    @media print {
+      html { scroll-snap-type: none; }
+      body { background: #fff; }
+      .progress, .nav, .counter { display: none; }
+      .slide { min-height: 100vh; page-break-after: always; padding: 18px; }
+      .frame { min-height: calc(100vh - 36px); box-shadow: none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="progress"><div class="bar" id="bar"></div></div>
+  <nav class="nav" id="nav" aria-label="幻灯片导航"></nav>
+  <div class="counter"><span id="current">01</span> / <span id="total">14</span></div>
+
+  <main>
+    <section class="slide" data-title="封面">
+      <div class="frame">
+        <div class="crumb"><span class="code">评审</span><div class="path"><span><b>新产品立项</b></span><span>星源 AgentKit 平台</span></div></div>
+        <h1>星源 AgentKit</h1>
+        <p class="subtitle">企业级 AI Agent 的开发、运行、评测与治理底座</p>
+        <div class="flow">
+          <div class="step"><div class="num">01</div><b>开发</b><span>CLI / SDK / 模板工程</span></div>
+          <div class="step"><div class="num">02</div><b>连接</b><span>MCP / Skills / 知识 / 记忆</span></div>
+          <div class="step"><div class="num">03</div><b>运行</b><span>Agent Engine / 沙箱 / Serverless</span></div>
+          <div class="step"><div class="num">04</div><b>治理</b><span>观测 / 评测 / 审计 / 安全</span></div>
+        </div>
+        <div class="footer"><span>申请部门：公有云产品中心 / 智算平台产品部</span><span class="tag">2026 立项评审</span></div>
+      </div>
+    </section>
+
+    <section class="slide" data-title="产品简介">
+      <div class="frame">
+        <div class="crumb"><span class="code">1.1</span><div class="path"><span><b>1 产品介绍</b></span><span><b>1.1 产品简介</b></span><span>平台说明</span></div></div>
+        <h2>企业级 AI Agent 的开发、运行、评测与治理底座</h2>
+        <div class="split intro-split">
+          <div class="arch-visual">
+            <svg class="platform-svg" viewBox="0 0 760 430" role="img" aria-label="星源 AgentKit 平台架构图">
+              <defs>
+                <linearGradient id="akRed" x1="0" x2="1"><stop offset="0" stop-color="#ff3f3a"/><stop offset="1" stop-color="#ff9460"/></linearGradient>
+                <linearGradient id="akSoft" x1="0" x2="1"><stop offset="0" stop-color="#ffe3e1"/><stop offset="1" stop-color="#fff1e8"/></linearGradient>
+                <marker id="akArrow" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto"><path d="M0,0 L5,3 L0,6" fill="none" stroke="#f05a4f" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker>
+              </defs>
+
+              <g font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', Arial, sans-serif">
+                <path d="M82 78 H150 V171 H170" fill="none" stroke="#f05a4f" stroke-width="1.8" marker-end="url(#akArrow)"/>
+                <text x="118" y="64" fill="#f05a4f" font-size="12" font-weight="800">访问</text>
+                <path d="M82 245 H150 V171 H170" fill="none" stroke="#f05a4f" stroke-width="1.8" marker-end="url(#akArrow)"/>
+                <text x="118" y="232" fill="#f05a4f" font-size="12" font-weight="800">开发</text>
+                <line x1="300" y1="171" x2="357" y2="171" stroke="#f05a4f" stroke-width="1.8" marker-end="url(#akArrow)"/>
+                <text x="318" y="158" fill="#f05a4f" font-size="12" font-weight="800">部署</text>
+                <path d="M235 224 V302" fill="none" stroke="#f05a4f" stroke-width="1.8" marker-end="url(#akArrow)"/>
+                <text x="244" y="270" fill="#f05a4f" font-size="12" font-weight="800">使用</text>
+                <text x="587" y="228" text-anchor="middle" fill="#f05a4f" font-size="24" font-weight="800">↔</text>
+
+                <g transform="translate(22 46)">
+                  <text x="30" y="33" text-anchor="middle" fill="#111827" font-size="19" font-weight="900">用户</text>
+                </g>
+                <g transform="translate(22 213)">
+                  <text x="30" y="33" text-anchor="middle" fill="#111827" font-size="19" font-weight="900">开发者</text>
+                </g>
+
+                <g transform="translate(170 118)">
+                  <rect x="0" y="0" width="130" height="106" rx="8" fill="#fff" stroke="#f2b5aa"/>
+                  <rect x="0" y="0" width="130" height="34" rx="8" fill="url(#akSoft)"/>
+                  <text x="65" y="23" text-anchor="middle" fill="#b43c35" font-size="18" font-weight="900">Agent</text>
+                  <circle cx="65" cy="66" r="30" fill="url(#akRed)"/>
+                  <text x="65" y="74" text-anchor="middle" fill="#fff" font-size="16" font-weight="900">Agent</text>
+                </g>
+
+                <g transform="translate(170 305)">
+                  <rect x="0" y="0" width="130" height="86" rx="8" fill="#fff" stroke="#f2b5aa"/>
+                  <rect x="0" y="0" width="130" height="34" rx="8" fill="url(#akSoft)"/>
+                  <text x="65" y="23" text-anchor="middle" fill="#b43c35" font-size="16" font-weight="900">星流模型 API</text>
+                  <circle cx="65" cy="61" r="20" fill="url(#akRed)"/>
+                  <text x="65" y="66" text-anchor="middle" fill="#fff" font-size="13" font-weight="900">Token</text>
+                </g>
+
+                <g transform="translate(360 74)">
+                  <rect x="0" y="0" width="205" height="245" rx="8" fill="#fff" stroke="#f2b5aa"/>
+                  <rect x="0" y="0" width="205" height="36" rx="8" fill="url(#akSoft)"/>
+                  <text x="102.5" y="24" text-anchor="middle" fill="#343a40" font-size="17" font-weight="900">AgentEngine运行时</text>
+                  <rect x="18" y="55" width="169" height="105" rx="8" fill="#fff" stroke="#f2b5aa" stroke-dasharray="4 4"/>
+                  <text x="102.5" y="82" text-anchor="middle" fill="#343a40" font-size="16" font-weight="900">框架支持</text>
+                  <g font-size="10.5" font-weight="850" fill="#fff">
+                    <rect x="28" y="98" width="72" height="28" rx="6" fill="url(#akRed)"/><text x="64" y="116.5" text-anchor="middle">Deep Agents</text>
+                    <rect x="106" y="98" width="72" height="28" rx="6" fill="url(#akRed)"/><text x="142" y="116.5" text-anchor="middle">LangChain</text>
+                    <rect x="28" y="132" width="72" height="28" rx="6" fill="url(#akRed)"/><text x="64" y="150.5" text-anchor="middle">LangGraph</text>
+                    <rect x="106" y="132" width="72" height="28" rx="6" fill="url(#akRed)"/><text x="142" y="150.5" text-anchor="middle">OpenClaw</text>
+                  </g>
+                  <rect x="18" y="174" width="169" height="55" rx="8" fill="#fff" stroke="#f2b5aa" stroke-dasharray="4 4"/>
+                  <text x="102.5" y="196" text-anchor="middle" fill="#343a40" font-size="16" font-weight="900">资源支持</text>
+                  <g font-size="10.5" font-weight="850" fill="#fff">
+                    <rect x="32" y="207" width="78" height="24" rx="6" fill="url(#akRed)"/><text x="71" y="223.5" text-anchor="middle">Serverless</text>
+                    <rect x="122" y="207" width="50" height="24" rx="6" fill="url(#akRed)"/><text x="147" y="223.5" text-anchor="middle">KCF</text>
+                  </g>
+                </g>
+
+                <g transform="translate(610 74)">
+                  <rect x="0" y="0" width="128" height="300" rx="8" fill="#fff" stroke="#f2b5aa"/>
+                  <rect x="0" y="0" width="128" height="36" rx="8" fill="url(#akSoft)"/>
+                  <text x="64" y="24" text-anchor="middle" fill="#343a40" font-size="17" font-weight="900">组件能力</text>
+                  <g font-size="14" font-weight="850" fill="#fff">
+                    <rect x="18" y="58" width="92" height="30" rx="6" fill="url(#akRed)"/><text x="64" y="79" text-anchor="middle">知识库</text>
+                    <rect x="18" y="104" width="92" height="30" rx="6" fill="url(#akRed)"/><text x="64" y="125" text-anchor="middle">记忆库</text>
+                    <rect x="18" y="150" width="92" height="30" rx="6" fill="url(#akRed)"/><text x="64" y="171" text-anchor="middle">MCP工具</text>
+                    <rect x="18" y="196" width="92" height="30" rx="6" fill="url(#akRed)"/><text x="64" y="217" text-anchor="middle">沙箱工具</text>
+                    <rect x="18" y="242" width="92" height="30" rx="6" fill="url(#akRed)"/><text x="64" y="263" text-anchor="middle">Skills</text>
+                  </g>
+                </g>
+
+                <rect x="360" y="338" width="205" height="28" rx="8" fill="url(#akSoft)" stroke="#f2b5aa"/>
+                <text x="462.5" y="357" text-anchor="middle" fill="#7b4a42" font-size="15" font-weight="900">评估</text>
+                <rect x="360" y="386" width="378" height="28" rx="8" fill="url(#akSoft)" stroke="#f2b5aa"/>
+                <text x="549" y="405" text-anchor="middle" fill="#7b4a42" font-size="15" font-weight="900">可观测</text>
+              </g>
+            </svg>
+          </div>
+          <div class="stack">
+            <div class="layer"><b>开发入口</b><span>开发者通过 ksadk CLI 与控制台构建 Agent，用户直接访问和使用 Agent。</span></div>
+            <div class="layer"><b>运行底座</b><span>AgentEngine 运行时承接 Deep Agents、LangChain、LangGraph、OpenClaw 等框架。</span></div>
+            <div class="layer"><b>组件能力</b><span>知识库、记忆库、MCP 工具、沙箱工具、Skills 等能力通过平台统一接入。</span></div>
+            <div class="layer"><b>治理闭环</b><span>评估与可观测贯穿开发、部署、运行全过程，支撑生产级上线。</span></div>
+          </div>
+        </div>
+        <div class="footer"><span>从“模型能力”转化为“业务执行能力”</span><span class="tag">核心定位</span></div>
+      </div>
+    </section>
+
+    <section class="slide" data-title="必要性">
+      <div class="frame">
+        <div class="crumb"><span class="code">1.2</span><div class="path"><span><b>1 产品介绍</b></span><span><b>1.2 来源及必要性</b></span><span>趋势判断</span></div></div>
+        <h2>从客户需求演进到金山云 AI 全栈闭环</h2>
+        <div class="flow">
+          <div class="step"><div class="num">过去</div><b>Chat</b><span>问答、总结、写作，主要验证模型效果。</span></div>
+          <div class="step"><div class="num">现在</div><b>Agent</b><span>规划复杂任务，自主调用 ERP、CRM、数据库等系统。</span></div>
+          <div class="step"><div class="num">闭环</div><b>Workflow</b><span>从生成文本走向业务动作闭环，需要工具、权限、数据和运行环境。</span></div>
+          <div class="step"><div class="num">平台</div><b>AgentKit</b><span>承接上层智能体应用，把客户数据资产与业务逻辑沉淀在平台。</span></div>
+        </div>
+        <div class="grid cols-2">
+          <div class="box blue"><b>客户需求演进</b><p>来源于企业级客户从简单的“单轮对话 Chat”向“复杂任务规划与自主执行 Agent”转型的战略诉求。企业不再满足于生成文本，而是需要 AI 自主调用内部 ERP、CRM、数据库等系统完成闭环业务。</p></div>
+          <div class="box green"><b>战略闭环规划</b><p>金山云从底层 GPU 智算算力，到中层星流模型平台，再到上层星源 AgentKit，形成 AI 服务全栈闭环，通过智能体层沉淀客户的数据资产与业务逻辑。</p></div>
+        </div>
+        <div class="footer"><span>来源：企业级客户从 Chat 向复杂任务 Agent 转型</span><span class="tag">Why Now</span></div>
+      </div>
+    </section>
+
+    <section class="slide" data-title="痛点图">
+      <div class="frame">
+        <div class="crumb"><span class="code">1.2</span><div class="path"><span><b>1 产品介绍</b></span><span><b>1.2 来源及必要性</b></span><span>问题地图</span></div></div>
+        <h2>企业生产级 Agent 的核心痛点</h2>
+        <div class="matrix pain-matrix">
+          <div class="cell head">痛点</div><div class="cell head">开发</div><div class="cell head">连接</div><div class="cell head">运行</div><div class="cell head">治理</div>
+          <div class="cell head">能力缺口</div><div class="cell warn">高代码门槛：开发者要同时处理 Agent 框架、工具调用、Prompt、状态管理和部署脚本，业务团队难以独立构建。</div><div class="cell warn">工具集成碎片化：每个 ERP、CRM、数据库和内部 API 都要写适配代码，鉴权、参数转换、错误处理难复用。</div><div class="cell warn">执行环境不隔离：代码、浏览器、文件和外部接口调用缺少统一沙箱，容易产生越权、误操作和安全外溢。</div><div class="cell warn">效果不可量化：出错靠人工排查，Trace、Token、工具调用、任务成功率和资源成本缺少统一视图。</div>
+          <div class="cell head">业务风险</div><div class="cell">开发周期长，项目交付依赖少数专家，难以规模复制。</div><div class="cell">系统打不通，工具越接越乱，后续维护和客户复制成本持续升高。</div><div class="cell">Agent 被诱导执行危险动作，影响业务系统和客户数据安全。</div><div class="cell">上线后失控，效果、成本、稳定性和责任边界都难解释。</div>
+          <div class="cell head">平台解法</div><div class="cell good">CLI / SDK / 模板工程，屏蔽底层资源与框架差异，让开发者聚焦业务逻辑。</div><div class="cell good">MCP 协议统一接入，HTTP 存量接口可转 MCP，工具即插即用并支持统一鉴权。</div><div class="cell good">AgentEngine + Sandbox 开箱即用，支持 VM/MicroVM 隔离、资源托管和弹性运行。</div><div class="cell good">OTEL Trace 全链路可视，Agent 评测闭环，日志审计和云原生资源监控统一管理。</div>
+          <div class="cell head">客户价值</div><div class="cell hot">更快构建</div><div class="cell hot">更易集成</div><div class="cell hot">更安全上线</div><div class="cell hot">更可持续运营</div>
+        </div>
+        <div class="footer"><span>从痛点映射到产品模块，避免功能堆砌</span><span class="tag">问题-解法对应</span></div>
+      </div>
+    </section>
+
+    <section class="slide" data-title="响应型智能体">
+      <div class="frame">
+        <div class="crumb"><span class="code">1.3.1</span><div class="path"><span><b>1 产品介绍</b></span><span><b>1.3 市场及潜在客户</b></span><span>响应型智能体</span></div></div>
+        <h2 class="title-stack"><span>场景一：响应型智能体</span><em>Reactive / Tool-Calling Agents</em></h2>
+        <div class="scenario-grid">
+          <div class="scenario-arch">
+            <div class="arch-row three">
+              <div class="arch-node"><b>用户输入</b>单轮问题 / 短上下文指令</div>
+              <div class="arch-node core"><b>LLM</b>Function Calling / ReAct</div>
+              <div class="arch-node"><b>工具集合</b>Tool Spec / API Schema</div>
+            </div>
+            <div class="arch-row">
+              <div class="arch-node"><b>搜索</b>联网检索</div>
+              <div class="arch-node"><b>实时数据</b>股票 / 天气</div>
+              <div class="arch-node"><b>业务查询</b>订单 / 库存</div>
+              <div class="arch-node"><b>响应生成</b>结构化结果</div>
+            </div>
+            <div class="arch-band">技术拓扑：LLM + Tool Spec -> Execution -> Response</div>
+          </div>
+          <div class="usage-list">
+            <div class="usage-item"><b>特征</b><span>核心依赖 Function Calling 或简单 ReAct 循环；没有长周期目标规划，通常是单轮或短上下文交互。</span></div>
+            <div class="usage-item"><b>典型代表</b><span>控制台小助手、股票/天气实时查询机器人，以及轻量业务查询 Bot。</span></div>
+            <div class="usage-item module-card"><b>AgentKit 使用模块</b><span>通过 MCP 广场提供极简工具注册流程，把 HTTP/API 快速转成模型可调用工具。</span><div class="module-badges"><span class="module-badge">MCP 广场</span><span class="module-badge green">Agent Runtime</span><span class="module-badge amber">API 转 MCP</span><span class="module-badge violet">知识库</span></div></div>
+            <div class="usage-item"><b>价值点</b><span>降低工具接入门槛，让互联网客户快速把现有 API 变成 Agent 能力，适合低风险高频查询场景。</span></div>
+          </div>
+        </div>
+        <div class="footer"><span>适合搜索、实时查询、业务轻操作等低复杂度 Agent 场景</span><span class="tag">Reactive</span></div>
+      </div>
+    </section>
+
+    <section class="slide" data-title="工作流引导型智能体">
+      <div class="frame">
+        <div class="crumb"><span class="code">1.3.1</span><div class="path"><span><b>1 产品介绍</b></span><span><b>1.3 市场及潜在客户</b></span><span>工作流引导型智能体</span></div></div>
+        <h2 class="title-stack"><span>场景二：工作流引导型智能体</span><em>Workflow / Layered Pattern Agents</em></h2>
+        <div class="scenario-grid">
+          <div class="scenario-arch">
+            <div class="arch-row three">
+              <div class="arch-node"><b>用户任务</b>SOP 明确的业务流程</div>
+              <div class="arch-node core"><b>状态机</b>LangGraph / DAG</div>
+              <div class="arch-node"><b>Agent 节点</b>局部动态决策</div>
+            </div>
+            <div class="arch-row">
+              <div class="arch-node"><b>串联</b>Step by Step</div>
+              <div class="arch-node"><b>并联</b>多路处理</div>
+              <div class="arch-node"><b>路由器</b>Router 分流</div>
+              <div class="arch-node"><b>反思</b>Reflection 修正</div>
+            </div>
+            <div class="arch-band">技术拓扑：串联 / 并联 / 路由器 / 反思四种基本设计模式的组合</div>
+          </div>
+          <div class="usage-list">
+            <div class="usage-item"><b>特征</b><span>将 Agent 动态决策与结构化 SOP 结合，由开发者通过状态机强行框定行动边界或局部 DAG 拓扑。</span></div>
+            <div class="usage-item"><b>典型代表</b><span>HR 招聘小助手、法律合规三阶段审查机器人、代码编辑-测试-审查类流程 Agent。</span></div>
+            <div class="usage-item module-card"><b>AgentKit 使用模块</b><span>依托 ksadk CLI 和 AgentEngine 运行时底座，托管长链路、高并发的复杂业务状态机。</span><div class="module-badges"><span class="module-badge">ksadk CLI</span><span class="module-badge green">AgentEngine Runtime</span><span class="module-badge violet">Trace / Eval</span></div></div>
+            <div class="usage-item"><b>价值点</b><span>既保留业务流程的确定性，又允许局部节点动态决策，适合互联网客户复杂运营和企业服务流程。</span></div>
+          </div>
+        </div>
+        <div class="footer"><span>适合招聘、法务、研发流程、客服工单等边界清晰但步骤较长的场景</span><span class="tag">Workflow</span></div>
+      </div>
+    </section>
+
+    <section class="slide" data-title="自主规划型智能体">
+      <div class="frame">
+        <div class="crumb"><span class="code">1.3.1</span><div class="path"><span><b>1 产品介绍</b></span><span><b>1.3 市场及潜在客户</b></span><span>自主规划型智能体</span></div></div>
+        <h2 class="title-stack"><span>场景三：自主规划型智能体</span><em>Autonomous / Plan-and-Solve Agents</em></h2>
+        <div class="scenario-grid">
+          <div class="scenario-arch">
+            <div class="arch-row three">
+              <div class="arch-node"><b>宏观目标</b>开放式终极任务</div>
+              <div class="arch-node core"><b>Planner</b>拆解任务树</div>
+              <div class="arch-node"><b>Executor</b>执行与反馈</div>
+            </div>
+            <div class="arch-row">
+              <div class="arch-node"><b>Task Tree</b>子任务树</div>
+              <div class="arch-node"><b>Self-Reflect</b>自我反思</div>
+              <div class="arch-node"><b>CoT</b>深度推理</div>
+              <div class="arch-node"><b>Sandbox</b>隔离执行</div>
+            </div>
+            <div class="arch-band">技术拓扑：树状检索 + Self-Reflective + Chain-of-Thought + 动态计划修正</div>
+          </div>
+          <div class="usage-list">
+            <div class="usage-item"><b>特征</b><span>用户只给出宏观终极目标，Agent 自主拆解数十步子任务，并根据环境反馈动态修正计划。</span></div>
+            <div class="usage-item"><b>典型代表</b><span>KSCC、灵犀 Claw，以及需要长链路探索、代码运行、系统探测的高自主性 Agent。</span></div>
+            <div class="usage-item module-card"><b>AgentKit 使用模块</b><span>必须把高自主性 Agent 关进 Sandbox，隔离代码运行、网络探测、文件访问和系统调用。</span><div class="module-badges"><span class="module-badge">Sandbox</span><span class="module-badge green">Skill</span><span class="module-badge amber">知识库/记忆库</span><span class="module-badge violet">Trace</span></div></div>
+            <div class="usage-item"><b>价值点</b><span>用沙箱、资源限额、可观测和审计机制降低系统崩溃、安全逃逸和不可控执行风险。</span></div>
+          </div>
+        </div>
+        <div class="footer"><span>适合安全研究、自动化探索、复杂研发任务等高自主性场景</span><span class="tag">Autonomous</span></div>
+      </div>
+    </section>
+
+    <section class="slide" data-title="竞品对标">
+      <div class="frame">
+        <div class="crumb"><span class="code">1.3.2</span><div class="path"><span><b>1 产品介绍</b></span><span><b>1.3 市场及潜在客户</b></span><span>竞争格局</span></div></div>
+        <h2>主流云厂商正在建设 Agent 基础设施能力</h2>
+        <div class="matrix competitive-matrix">
+          <div class="cell head">特性维度</div><div class="cell head">火山引擎 AgentKit</div><div class="cell head">谷歌云 Vertex AI Agent Builder</div><div class="cell head">阿里云 PAI-LangStudio</div><div class="cell head">腾讯云 ADP 基础设施</div>
+          <div class="cell head">底层运行时</div><div class="cell good">智能体运行时<br>Serverless</div><div class="cell">Vertex AI Agent Engine</div><div class="cell">PAI-AgentRun / K8s 容器</div><div class="cell">腾讯云弹性 Serverless 引擎</div>
+          <div class="cell head">开发工具链</div><div class="cell good">VeADK</div><div class="cell">Python ADK<br>CLI 优先</div><div class="cell">声明式代码编排 + CLI 体系</div><div class="cell">ADP 开发者 SDK 适配器</div>
+          <div class="cell head">多 Agent 协作</div><div class="cell good">A2A<br>智能体空间中心</div><div class="cell">Agent2Agent 协议空间</div><div class="cell">多 Agent 协同流编排</div><div class="cell">跨 Agent 异步消息网关</div>
+          <div class="cell head">工具协议支持</div><div class="cell good">原生深度支持 MCP 标准协议</div><div class="cell">统一 Google Tools / MCP</div><div class="cell">阿里云服务插件 / 开放网关</div><div class="cell">微信 / 企微生态路由 + 开放 API</div>
+          <div class="cell head">商业计费范式</div><div class="cell good">免运维 Serverless 按量计费</div><div class="cell">按节点算力与托管实例计费</div><div class="cell">绑定 PAI 智算资源按需计费</div><div class="cell">联动函数 / 向量存储按量计费</div>
+        </div>
+        <div class="footer"><span>星源差异化抓手：轻量 Serverless 运行时 + MCP 工具生态 + 沙箱安全隔离 + ksadk 开发体验</span><span class="tag">Competitive Map</span></div>
+      </div>
+    </section>
+
+    <section class="slide" data-title="商业模式">
+      <div class="frame">
+        <div class="crumb"><span class="code">1.4</span><div class="path"><span><b>1 产品介绍</b></span><span><b>1.4 营收能力与成本</b></span><span>商业模式</span></div></div>
+        <h2>平台带动基础资源、模型和数据服务消耗</h2>
+        <div class="flow cols-3">
+          <div class="step"><div class="num">收入 1</div><b>平台层计费</b><ul><li>知识库 / 记忆库：计算资源 + 数据存储 + Embedding / Rerank 模型调用</li><li>保持 PaaS 产品毛利</li></ul></div>
+          <div class="step"><div class="num">收入 2</div><b>基础资源订单</b><ul><li>Agent 运行时：创建底层 Serverless 算力订单</li><li>沙箱实例：创建隔离执行所需的 KCF / 容器资源订单</li></ul></div>
+          <div class="step linked"><div class="num">收入 3</div><b>模型与配套服务</b><ul><li>Agent 运行：Token 服务调用费用</li><li>Skill / Agent 结果：KS3 对象存储费用</li><li>Agent / 沙箱镜像：镜像服务实例费用</li></ul></div>
+        </div>
+        <div class="cost-table">
+          <div class="cost-row head"><div class="cost-cell">成本分类</div><div class="cost-cell">核心成本控制策略</div></div>
+          <div class="cost-row"><div class="cost-cell">产品研发与底层架构适配投入<br>新增 / 长期底座</div><div class="cost-cell strategy">借力开源生态适配：兼容标准开源协议，如 MIT 协议的 LangChain 环境、Apache 2.0 协议的 OpenClaw。</div></div>
+          <div class="cost-row"><div class="cost-cell">智能体运行时与安全沙箱算力成本</div><div class="cost-cell strategy">Serverless 极致弹性与缩容至零；沙箱内核快照挂起，降低空闲资源占用。</div></div>
+          <div class="cost-row"><div class="cost-cell">高性能知识库与记忆库存储成本</div><div class="cost-cell strategy">语义智能切片与过滤；多租户分区分表逻辑强隔离，减少无效召回和冗余存储。</div></div>
+          <div class="cost-row"><div class="cost-cell">全链路 Trace 可观测性数据成本</div><div class="cost-cell strategy">动态采样追踪机制；全生命周期日志分层置换，控制高频 Trace 数据膨胀。</div></div>
+        </div>
+        <div class="footer"><span>当前进展：财务定价测算过程中，成本与毛利数据待核实</span><span class="tag">Revenue Model</span></div>
+      </div>
+    </section>
+
+    <section class="slide" data-title="场景测算">
+      <div class="frame">
+        <div class="crumb"><span class="code">1.4</span><div class="path"><span><b>1 产品介绍</b></span><span><b>1.4 营收能力与成本</b></span><span>代表场景测算</span></div></div>
+        <h2>自主规划 Agent 场景：单客户年收入约 442 万</h2>
+        <div class="estimate-kpis">
+          <div class="estimate-kpi"><span>单一客户用户规模</span><b>10,000</b><strong>用户，每人每日 2 次会话</strong></div>
+          <div class="estimate-kpi"><span>日会话量</span><b>20,000</b><strong>次会话，单会话沙箱存活 50 分钟</strong></div>
+          <div class="estimate-kpi"><span>年收入估算</span><b>442.38 万</b><strong>元/年，暂不计存储、镜像、Trace 等配套费用</strong></div>
+        </div>
+        <div class="estimate-layout">
+          <div class="assumption-card">
+            <b>测算条件</b>
+            <ul>
+              <li>场景三自主规划型 Agent，产品形态参考灵犀 Claw。</li>
+              <li>一次会话拉起一个 Skill 沙箱，会话内多次 Skill 调用复用同一沙箱。</li>
+              <li>沙箱规格 2C2G，单价 0.18 元/小时；会话 20 分钟 + 保活 30 分钟。</li>
+              <li>一次任务平均 5 轮交互；每轮按输入 8k tokens、输出 2k tokens 估算。</li>
+              <li>GLM-5.2：输入 8 元/百万 tokens，输出 28 元/百万 tokens，缓存命中 2 元/百万 tokens；按 60% 输入缓存命中估算。</li>
+            </ul>
+          </div>
+          <div class="estimate-table">
+            <div class="estimate-row head"><div class="estimate-cell">收入项</div><div class="estimate-cell">计算口径</div><div class="estimate-cell">日收入</div><div class="estimate-cell">年收入</div></div>
+            <div class="estimate-row"><div class="estimate-cell">Skill 沙箱</div><div class="estimate-cell">20,000 会话 × 50/60 小时 × 0.18 元/小时</div><div class="estimate-cell">3,000 元</div><div class="estimate-cell">109.50 万元</div></div>
+            <div class="estimate-row"><div class="estimate-cell">GLM-5.2 模型调用</div><div class="estimate-cell">20,000 会话 × 5 轮 × 0.0912 元/轮</div><div class="estimate-cell">9,120 元</div><div class="estimate-cell">332.88 万元</div></div>
+            <div class="estimate-row total"><div class="estimate-cell">合计</div><div class="estimate-cell">模型调用约 75%，沙箱资源约 25%</div><div class="estimate-cell">12,120 元</div><div class="estimate-cell">442.38 万元</div></div>
+          </div>
+        </div>
+        <div class="footer"><span>测算用途：展示 AgentKit 可通过模型调用与 Skill 沙箱资源消耗形成持续收入，实际金额随会话时长、轮次、缓存命中率变化</span><span class="tag">Scenario Estimate</span></div>
+      </div>
+    </section>
+
+    <section class="slide" data-title="产品进展">
+      <div class="frame">
+        <div class="crumb"><span class="code">1.4</span><div class="path"><span><b>1 产品介绍</b></span><span><b>1.4 研发方案与时间规划</b></span><span>近期进展</span></div></div>
+        <h2>近期产品进展与 6.30 商用版本计划</h2>
+        <div class="release-strip">
+          <div class="release-goal"><b>6.30 前发布商用版本</b><span>围绕知识库、记忆库、Agent 运行时、MCP、Sandbox、Eval 与 AI 网关形成首个可售闭环。</span></div>
+          <div class="release-case"><b>企业级知识助手 / 垂直 RAG</b><span>多格式文档解析、检索记录、文档管理、错误文档重索引，支撑企业知识问答与行业知识库。</span></div>
+          <div class="release-case"><b>长记忆社交 / 办公 Agent</b><span>对接 Mem0 与自研记忆库，支持永久存储、资源隔离、会话管理与跨会话上下文保持。</span></div>
+          <div class="release-case"><b>受控代码执行 / 科学计算</b><span>Sandbox 提供 Python、浏览器、自定义镜像、VPC 私网访问、KS3 / KPFS 挂载等隔离执行能力。</span></div>
+        </div>
+        <div class="roadmap">
+          <div class="phase release-phase"><b>已上线 / 已提测</b><div class="mini compact"><span>Agent 运行时：组件关联、版本回滚、在线调试、详情监控</span><span>MCP：广场、自定义 Server、SSE / StreamableHTTP、双 Key 模式</span><span>Skill 中心：空间与 Skill 管理</span><span>OpenAPI MCP Server 已提测</span></div></div>
+          <div class="phase release-phase"><b>6 月商用闭环</b><div class="mini compact"><span>记忆库：Mem0、策略场景、会话管理、租户资源隔离</span><span>Sandbox：AIO / Code / 浏览器 / 自定义模板、VPC、KS3 / KPFS</span><span>知识库：多格式解析、检索记录、重索引、计量计费</span><span>Eval + AI 网关：Trace 在线评测、AgentAPI 路由、API-Key / JWT 认证</span></div></div>
+          <div class="phase release-phase"><b>7-8 月能力增强</b><div class="mini compact"><span>运行时：第三方 Agent 代码部署、自动休眠、A2A 注册发现</span><span>MCP：调用监控、日志检索、MCP HUB 工具集合</span><span>记忆库：策略自定义、记忆管理、模型可选、导入导出</span><span>知识库：权限 / 标签、源文件与图片还原、KS3 / 云文档 / 公开链接上传</span></div></div>
+          <div class="phase release-phase"><b>9 月-Q4 底座深化</b><div class="mini compact"><span>知识库：Embedding / Rerank / 推理模型上星流，支持独享型知识库</span><span>Sandbox：cube sandbox、动态挂载文件系统、GPU、PrivateLink</span><span>评测：Skill 评测、Prompt 评测</span><span>模板与 SDK 补全，强化实例配置可视化</span></div></div>
+        </div>
+        <div class="footer"><span>依据：AgentKit 近期产品进展汇报；商用版本以“场景可售 + 组件计费 + 运行治理”闭环为验收重点</span><span class="tag">Product Progress</span></div>
+      </div>
+    </section>
+
+    <section class="slide" data-title="风控机制">
+      <div class="frame">
+        <div class="crumb"><span class="code">2</span><div class="path"><span><b>2 风控相关</b></span><span><b>2.1 用户数据安全与隐私保护</b></span><span><b>2.2 业务合规性</b></span></div></div>
+        <h2>风控方案：默认隔离、最小授权、全链路可追溯</h2>
+        <div class="risk-answer">
+          <div class="answer-pill"><b>不涉及数据出境</b><span>模型推理、记忆、知识库与沙箱环境部署在中国大陆境内数据中心。</span></div>
+          <div class="answer-pill"><b>不共享租户资源</b><span>计算、网络、知识库、记忆库和工具凭据按租户隔离。</span></div>
+          <div class="answer-pill"><b>不开放越权执行</b><span>Agent 的接口调用、代码执行和日志留存均进入平台治理闭环。</span></div>
+        </div>
+        <div class="risk-control-grid">
+          <div class="risk-control-card">
+            <span class="badge">数据与网络</span>
+            <b>把租户边界落到资源层</b>
+            <ul><li>KCI 容器级隔离，后续演进到 Micro VM 硬件级 + 内核级双重隔离</li><li>独立网络命名空间、虚拟网卡、IP 与路由表</li><li>默认白名单网络策略，禁止租户实例横向互访</li></ul>
+          </div>
+          <div class="risk-control-card">
+            <span class="badge">租户数据</span>
+            <b>把业务数据隔离到组件层</b>
+            <ul><li>知识库与记忆库按企业/租户分配独立资源空间</li><li>RAG 文档集、用户记忆、会话数据不可跨租户访问</li><li>MCP API-Key 与内部路由按账号属性精准隔离</li></ul>
+          </div>
+          <div class="risk-control-card">
+            <span class="badge">执行边界</span>
+            <b>把 Agent 能力约束在授权内</b>
+            <ul><li>MCP 双模式鉴权：平台 API-Key + 客户自有 Key</li><li>Sandbox 限定代码、浏览器、文件和系统调用范围</li><li>输入/输出接入内容安全审查，过滤高风险生成内容</li></ul>
+          </div>
+          <div class="risk-control-card">
+            <span class="badge">审计合规</span>
+            <b>把过程沉淀成可验收证据</b>
+            <ul><li>Trace 记录模型交互、工具调用、沙箱操作和异常链路</li><li>日志留存策略按合规要求配置，可满足不少于 6 个月审计</li><li>等保/安全产品许可按最终销售形态补充评估材料</li></ul>
+          </div>
+        </div>
+        <div class="evidence-strip">
+          <div class="evidence-label">验收抓手</div>
+          <div class="evidence-list"><span>数据不出境说明</span><span>租户隔离设计</span><span>Sandbox 边界说明</span><span>MCP 鉴权策略</span><span>Trace / 日志留存策略</span><span>等保与许可评估材料</span></div>
+        </div>
+        <div class="footer"><span>风控目标：把 Agent 的数据、网络、工具调用和代码执行全部收束在可授权、可隔离、可追溯的边界内</span><span class="tag">Risk Control</span></div>
+      </div>
+    </section>
+
+    <section class="slide" data-title="法务安全">
+      <div class="frame">
+        <div class="crumb"><span class="code">3-4</span><div class="path"><span><b>3 法务相关</b></span><span><b>4 安全相关</b></span><span>风险边界与治理动作</span></div></div>
+        <h2>法务与安全：外部依赖可控，核心能力自研，客户数据边界清晰</h2>
+        <div class="risk-answer cols-2">
+          <div class="answer-pill"><b>依赖可追溯</b><span>兼容 MIT / Apache 2.0 等宽松许可生态，建立组件版本与许可清单。</span></div>
+          <div class="answer-pill"><b>资产可沉淀</b><span>平台架构、沙箱预热、Agentic 记忆与知识检索形成自研技术资产。</span></div>
+        </div>
+        <div class="risk-control-grid three">
+          <div class="risk-control-card">
+            <span class="badge">外部依赖</span>
+            <b>只引入许可边界清晰的生态组件</b>
+            <ul><li>LangChain、LangGraph 等开源生态组件：MIT 协议</li><li>OpenClaw：Apache 2.0 协议</li><li>依赖清单记录组件名称、版本号和许可类型</li><li>后续版本新增依赖进入清单维护流程</li></ul>
+          </div>
+          <div class="risk-control-card">
+            <span class="badge">技术资产</span>
+            <b>核心平台能力以自研沉淀</b>
+            <ul><li>平台架构设计、沙箱预热机制为金山自研</li><li>Agentic 记忆检索、知识库检索具备专利申请价值</li><li>当前方案不涉及第三方专利授权依赖</li><li>后续可按模块沉淀专利申请材料</li></ul>
+          </div>
+          <div class="risk-control-card">
+            <span class="badge">数据边界</span>
+            <b>只处理客户授权上传的业务内容</b>
+            <ul><li>知识库/记忆库处理用户上传业务信息与会话上下文</li><li>MCP 代码方式部署会解析处理用户上传代码内容</li><li>SkillsHub 处理用户主动上传的 Skills 内容</li><li>平台处理数据但不拥有客户数据</li></ul>
+          </div>
+        </div>
+        <div class="footer"><span>安全口径：平台会处理客户授权上传的数据与代码内容，但不拥有客户数据；通过依赖清单、技术资产沉淀和数据边界说明控制风险</span><span class="tag">Legal & Security</span></div>
+      </div>
+    </section>
+
+    <section class="slide" data-title="总结致谢">
+      <div class="frame">
+        <div class="crumb"><span class="code">总结</span><div class="path"><span><b>汇报小结</b></span><span>核心要点回顾</span></div></div>
+        <h2>星源 AgentKit：企业级 Agent 基础设施能力沉淀</h2>
+        <div class="flow">
+          <div class="step"><div class="num">定位</div><b>Agent 基础设施底座</b><span>覆盖开发、运行、评测与治理，将模型能力转化为业务执行能力。</span></div>
+          <div class="step"><div class="num">场景</div><b>三类 Agent 形态</b><span>响应型、工作流引导型、自主规划型，支撑互联网客户多样化业务落地。</span></div>
+          <div class="step"><div class="num">商业</div><b>平台带动资源消耗</b><span>平台组件计费、Serverless 基础资源订单、模型与数据配套服务消耗。</span></div>
+          <div class="step"><div class="num">治理</div><b>风险边界清晰</b><span>租户隔离、最小授权、审计追溯、外部依赖清单和数据边界说明。</span></div>
+        </div>
+        <div class="bigline">感谢聆听</div>
+        <div class="footer"><span>围绕产品定位、客户场景、商业模型、研发进展与风险边界完成本次汇报</span><span class="tag">Summary</span></div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const slides = Array.from(document.querySelectorAll(".slide"));
+    const nav = document.getElementById("nav");
+    const current = document.getElementById("current");
+    const total = document.getElementById("total");
+    const bar = document.getElementById("bar");
+    total.textContent = String(slides.length).padStart(2, "0");
+    slides.forEach((slide, index) => {
+      const dot = document.createElement("button");
+      dot.className = "dot";
+      dot.type = "button";
+      dot.title = slide.dataset.title || `Slide ${index + 1}`;
+      dot.addEventListener("click", () => slide.scrollIntoView({ behavior: "smooth" }));
+      nav.appendChild(dot);
+    });
+    const dots = Array.from(document.querySelectorAll(".dot"));
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting) return;
+        const index = slides.indexOf(entry.target);
+        current.textContent = String(index + 1).padStart(2, "0");
+        dots.forEach((dot, dotIndex) => dot.classList.toggle("active", dotIndex === index));
+        bar.style.width = `${((index + 1) / slides.length) * 100}%`;
+      });
+    }, { threshold: 0.58 });
+    slides.forEach((slide) => observer.observe(slide));
+    document.addEventListener("keydown", (event) => {
+      const activeIndex = Math.max(0, dots.findIndex((dot) => dot.classList.contains("active")));
+      if (event.key === "ArrowDown" || event.key === "PageDown" || event.key === " ") {
+        event.preventDefault();
+        slides[Math.min(slides.length - 1, activeIndex + 1)].scrollIntoView({ behavior: "smooth" });
+      }
+      if (event.key === "ArrowUp" || event.key === "PageUp") {
+        event.preventDefault();
+        slides[Math.max(0, activeIndex - 1)].scrollIntoView({ behavior: "smooth" });
+      }
+      if (event.key.toLowerCase() === "f") {
+        if (!document.fullscreenElement) document.documentElement.requestFullscreen();
+        else document.exitFullscreen();
+      }
+    });
+  </script>
+</body>
+</html>
