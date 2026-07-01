@@ -1,0 +1,1167 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>星源 AgentKit｜企业级 Agent Infra 平台</title>
+  <style>
+    :root {
+      --bg: #f6f9fd;
+      --surface: #ffffff;
+      --surface-2: #eef6ff;
+      --surface-3: #f8fbff;
+      --text: #101827;
+      --muted: #5f6f86;
+      --soft: #dbe7f5;
+      --blue: #2563eb;
+      --cyan: #0891b2;
+      --green: #059669;
+      --orange: #ea580c;
+      --purple: #7c3aed;
+      --red: #dc2626;
+      --shadow: 0 20px 60px rgba(15, 23, 42, .08);
+      --radius: 18px;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", Arial, sans-serif;
+      color: var(--text);
+      background:
+        linear-gradient(rgba(37, 99, 235, .045) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(37, 99, 235, .045) 1px, transparent 1px),
+        radial-gradient(circle at 14% 8%, rgba(8, 145, 178, .16), transparent 34%),
+        radial-gradient(circle at 86% 12%, rgba(124, 58, 237, .12), transparent 32%),
+        var(--bg);
+      background-size: 56px 56px, 56px 56px, auto, auto, auto;
+      line-height: 1.65;
+    }
+
+    a { color: inherit; text-decoration: none; }
+    .nav {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      background: rgba(255, 255, 255, .86);
+      backdrop-filter: blur(18px);
+      border-bottom: 1px solid var(--soft);
+    }
+    .nav-inner {
+      max-width: 1240px;
+      margin: 0 auto;
+      padding: 14px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+    }
+    .brand {
+      font-weight: 850;
+      letter-spacing: -.2px;
+      white-space: nowrap;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .brand::before {
+      content: "";
+      width: 28px;
+      height: 28px;
+      border-radius: 9px;
+      background: linear-gradient(135deg, var(--blue), var(--cyan));
+      box-shadow: 0 10px 24px rgba(37, 99, 235, .24);
+    }
+    .nav-links {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      gap: 8px;
+      font-size: 13px;
+      color: var(--muted);
+    }
+    .nav-links a {
+      padding: 7px 11px;
+      border-radius: 999px;
+      border: 1px solid transparent;
+      background: rgba(241, 245, 249, .8);
+    }
+    .nav-links a:hover {
+      color: var(--blue);
+      border-color: rgba(37, 99, 235, .22);
+      background: #fff;
+    }
+
+    main { overflow: hidden; }
+    section, header {
+      max-width: 1240px;
+      margin: 0 auto;
+      padding: 58px 24px;
+    }
+    .hero {
+      min-height: 680px;
+      display: grid;
+      grid-template-columns: minmax(0, 1.02fr) minmax(420px, .98fr);
+      gap: 42px;
+      align-items: center;
+      padding-top: 72px;
+    }
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      padding: 7px 12px;
+      border-radius: 999px;
+      background: #e0f2fe;
+      color: #0369a1;
+      border: 1px solid #bae6fd;
+      font-weight: 800;
+      font-size: 13px;
+      margin-bottom: 22px;
+    }
+    .eyebrow::before {
+      content: "";
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--green);
+    }
+    h1 {
+      margin: 0;
+      font-size: clamp(48px, 5.8vw, 78px);
+      line-height: 1.08;
+      letter-spacing: -3px;
+    }
+    h1 .title-line { display: block; }
+    .gradient {
+      background: linear-gradient(110deg, #0f172a, var(--blue) 40%, var(--cyan) 75%, var(--green));
+      -webkit-background-clip: text;
+      color: transparent;
+    }
+    .hero p {
+      max-width: 760px;
+      color: var(--muted);
+      font-size: 19px;
+      margin: 24px 0 0;
+    }
+    .hero-actions {
+      margin-top: 30px;
+      display: flex;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+    .button {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 13px 18px;
+      border-radius: 12px;
+      font-weight: 800;
+      background: var(--blue);
+      color: #fff;
+      box-shadow: 0 16px 36px rgba(37, 99, 235, .24);
+    }
+    .button.secondary {
+      background: #fff;
+      color: var(--blue);
+      border: 1px solid var(--soft);
+      box-shadow: none;
+    }
+    .hero-visual {
+      position: relative;
+      min-height: 500px;
+      border-radius: 28px;
+      background: linear-gradient(145deg, rgba(255,255,255,.92), rgba(239,246,255,.78));
+      border: 1px solid var(--soft);
+      box-shadow: var(--shadow);
+      padding: 30px;
+      overflow: hidden;
+    }
+    .hero-visual::before {
+      content: "";
+      position: absolute;
+      inset: 44px;
+      border-radius: 50%;
+      border: 1px dashed rgba(37, 99, 235, .25);
+      transform: rotate(-14deg);
+    }
+    .core {
+      position: absolute;
+      left: 50%;
+      top: 48%;
+      width: 230px;
+      height: 230px;
+      transform: translate(-50%, -50%);
+      border-radius: 50%;
+      background: radial-gradient(circle at 32% 24%, #fff, #dbeafe 40%, #bfdbfe);
+      border: 1px solid #93c5fd;
+      display: grid;
+      place-items: center;
+      text-align: center;
+      box-shadow: 0 22px 54px rgba(37, 99, 235, .18);
+      z-index: 2;
+    }
+    .core b { display: block; font-size: 28px; line-height: 1.15; }
+    .core span { color: var(--muted); font-weight: 700; font-size: 13px; }
+    .orbit {
+      position: absolute;
+      width: 190px;
+      min-height: 94px;
+      padding: 16px;
+      border-radius: 16px;
+      background: rgba(255,255,255,.86);
+      border: 1px solid var(--soft);
+      box-shadow: 0 12px 32px rgba(15,23,42,.08);
+      z-index: 3;
+    }
+    .orbit b { display: block; font-size: 17px; margin-bottom: 4px; }
+    .orbit span { color: var(--muted); font-size: 12.5px; display: block; line-height: 1.45; }
+    .o1 { left: 30px; top: 58px; }
+    .o2 { right: 26px; top: 82px; }
+    .o3 { left: 38px; bottom: 80px; }
+    .o4 { right: 44px; bottom: 58px; }
+
+    .section-head {
+      display: grid;
+      grid-template-columns: minmax(280px, .8fr) minmax(360px, 1.2fr);
+      gap: 28px;
+      align-items: end;
+      margin-bottom: 28px;
+    }
+    h2 {
+      margin: 0;
+      font-size: clamp(30px, 3.2vw, 44px);
+      line-height: 1.08;
+      letter-spacing: -1.8px;
+    }
+    .section-head p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 17px;
+    }
+    h3 { margin: 0 0 10px; font-size: 22px; line-height: 1.25; }
+    p { margin: 0; }
+    .grid { display: grid; gap: 18px; }
+    .cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .cols-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    .card, .panel, .scenario, .module, .timeline-card {
+      background: rgba(255,255,255,.9);
+      border: 1px solid var(--soft);
+      border-radius: var(--radius);
+      box-shadow: 0 16px 42px rgba(15, 23, 42, .055);
+    }
+    .card { padding: 22px; }
+    .card p, .card li, .module p, .module li, .timeline-card p, .scenario p {
+      color: var(--muted);
+      font-size: 14.5px;
+    }
+    .kicker {
+      font-size: 12px;
+      color: var(--blue);
+      font-weight: 850;
+      letter-spacing: .8px;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+    }
+    .metric {
+      padding: 24px;
+      border-radius: var(--radius);
+      background: linear-gradient(145deg, #fff, #f0f9ff);
+      border: 1px solid #dbeafe;
+    }
+    .metric b { display: block; font-size: 22px; line-height: 1.15; margin-bottom: 10px; color: var(--blue); }
+    .metric span { color: var(--muted); font-size: 14px; }
+
+    .capability-map {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 14px;
+    }
+    .cap {
+      border: 1px solid var(--soft);
+      border-radius: 18px;
+      background: rgba(255,255,255,.9);
+      padding: 18px;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 12px 30px rgba(15, 23, 42, .045);
+    }
+    .cap::before {
+      content: "";
+      position: absolute;
+      inset: 0 0 auto 0;
+      height: 4px;
+      background: var(--accent, var(--blue));
+    }
+    .cap b { display: block; margin: 8px 0 10px; font-size: 18px; }
+    .cap span { color: var(--muted); font-size: 14px; line-height: 1.55; }
+    .cap small { color: var(--accent, var(--blue)); font-weight: 900; }
+
+    .runtime-arch {
+      margin: 18px 0 22px;
+      border: 1px solid var(--soft);
+      border-radius: 24px;
+      background:
+        radial-gradient(circle at 20% 20%, rgba(14,165,233,.11), transparent 36%),
+        radial-gradient(circle at 86% 30%, rgba(16,185,129,.10), transparent 34%),
+        rgba(255,255,255,.9);
+      padding: 22px;
+      box-shadow: var(--shadow);
+    }
+    .runtime-arch-title {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      align-items: baseline;
+      margin-bottom: 18px;
+    }
+    .runtime-arch-title b {
+      font-size: 20px;
+      color: var(--text);
+    }
+    .runtime-arch-title span {
+      color: var(--muted);
+      font-size: 13px;
+    }
+    .arch-legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+      justify-content: flex-end;
+      margin-bottom: 16px;
+    }
+    .legend-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border-radius: 999px;
+      border: 1px solid var(--soft);
+      background: #fff;
+      color: var(--muted);
+      padding: 6px 9px;
+      font-size: 12px;
+      font-weight: 800;
+    }
+    .legend-dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 999px;
+      background: #94a3b8;
+    }
+    .legend-dot.agentkit {
+      background: var(--green);
+      box-shadow: 0 0 12px rgba(5,150,105,.28);
+    }
+    .arch-grid {
+      display: grid;
+      grid-template-columns: .9fr 1.15fr 1fr;
+      gap: 16px;
+      align-items: stretch;
+    }
+    .arch-column {
+      display: grid;
+      gap: 12px;
+      align-content: center;
+    }
+    .arch-node {
+      border: 1px solid var(--soft);
+      border-radius: 18px;
+      background: #fff;
+      padding: 16px;
+      position: relative;
+      min-height: 92px;
+    }
+    .arch-node small {
+      display: block;
+      color: var(--cyan);
+      font-size: 12px;
+      font-weight: 900;
+      letter-spacing: .4px;
+      margin-bottom: 7px;
+    }
+    .arch-node b {
+      display: block;
+      font-size: 19px;
+      margin-bottom: 8px;
+    }
+    .arch-node span {
+      display: block;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.5;
+    }
+    .arch-center {
+      display: grid;
+      gap: 12px;
+      border: 1px solid #86efac;
+      border-radius: 22px;
+      background: #ecfdf5;
+      padding: 16px;
+      position: relative;
+    }
+    .arch-core {
+      min-height: 120px;
+      border-radius: 18px;
+      background: linear-gradient(135deg, #dbeafe, #d1fae5);
+      border: 1px solid rgba(16,185,129,.35);
+      display: grid;
+      place-items: center;
+      text-align: center;
+      padding: 18px;
+    }
+    .arch-agentkit {
+      border-color: rgba(16,185,129,.42);
+      background:
+        linear-gradient(135deg, rgba(16,185,129,.12), rgba(14,165,233,.08)),
+        #fff;
+      box-shadow: inset 0 0 0 1px rgba(16,185,129,.08);
+      position: relative;
+    }
+    .arch-agentkit::after {
+      content: "AgentKit";
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      border-radius: 999px;
+      padding: 3px 7px;
+      background: #ecfdf5;
+      border: 1px solid #86efac;
+      color: #047857;
+      font-size: 10px;
+      font-weight: 900;
+      letter-spacing: .2px;
+    }
+    .arch-core b {
+      display: block;
+      font-size: 26px;
+      margin-bottom: 8px;
+    }
+    .arch-core span {
+      color: #047857;
+      font-size: 14px;
+      font-weight: 750;
+    }
+    .arch-lanes {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+    .arch-lane {
+      border-radius: 14px;
+      background: rgba(255,255,255,.82);
+      border: 1px solid #bbf7d0;
+      padding: 12px;
+      text-align: center;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.45;
+    }
+    .arch-lane b {
+      display: block;
+      color: var(--text);
+      margin-bottom: 5px;
+    }
+    .arch-components {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+    .arch-chip {
+      border-radius: 14px;
+      padding: 12px;
+      background: #f0f9ff;
+      border: 1px solid #bae6fd;
+      min-height: 76px;
+    }
+    .arch-chip b {
+      display: block;
+      color: var(--text);
+      margin-bottom: 5px;
+      font-size: 15px;
+    }
+    .arch-chip span {
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.45;
+    }
+    .arch-flow {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-top: 14px;
+    }
+    .arch-flow div {
+      border-radius: 999px;
+      border: 1px solid #86efac;
+      background: #ecfdf5;
+      color: #047857;
+      font-size: 12px;
+      font-weight: 900;
+      text-align: center;
+      padding: 10px;
+    }
+
+    .architecture {
+      padding: 28px;
+      background: #fff;
+      border: 1px solid var(--soft);
+      border-radius: 24px;
+      box-shadow: var(--shadow);
+    }
+    .arch-top {
+      display: grid;
+      grid-template-columns: 1fr 1.15fr 1fr;
+      gap: 18px;
+      align-items: stretch;
+    }
+    .arch-col {
+      display: grid;
+      gap: 14px;
+    }
+    .arch-box {
+      border-radius: 16px;
+      padding: 18px;
+      border: 1px solid var(--soft);
+      background: var(--surface-3);
+      min-height: 120px;
+    }
+    .arch-box b { display: block; font-size: 19px; margin-bottom: 8px; }
+    .arch-box span { display: block; color: var(--muted); font-size: 13.5px; }
+    .runtime {
+      padding: 22px;
+      border-radius: 20px;
+      background: linear-gradient(145deg, #ecfdf5, #dbeafe);
+      border: 1px solid #86efac;
+      display: grid;
+      gap: 16px;
+      align-content: center;
+    }
+    .runtime-main {
+      text-align: center;
+      padding: 34px 18px;
+      border-radius: 18px;
+      background: rgba(255,255,255,.72);
+      border: 1px solid rgba(16,185,129,.38);
+    }
+    .runtime-main b { font-size: 30px; display: block; }
+    .runtime-main span { color: #047857; font-weight: 750; }
+    .runtime-lanes { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .runtime-lanes div {
+      border-radius: 14px;
+      background: rgba(255,255,255,.85);
+      border: 1px solid #d1fae5;
+      padding: 14px;
+      text-align: center;
+      color: var(--muted);
+      font-size: 13px;
+    }
+    .component-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+    .component {
+      padding: 15px;
+      border-radius: 14px;
+      background: #f0f9ff;
+      border: 1px solid #bae6fd;
+    }
+    .component b { font-size: 17px; margin-bottom: 4px; }
+    .component span { font-size: 12.5px; }
+    .arch-bottom {
+      margin-top: 18px;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+    }
+    .arch-bottom div {
+      text-align: center;
+      padding: 12px;
+      border-radius: 999px;
+      background: #ecfdf5;
+      border: 1px solid #86efac;
+      color: #047857;
+      font-weight: 850;
+    }
+
+    .scenario {
+      padding: 24px;
+      display: grid;
+      gap: 18px;
+      align-content: start;
+    }
+    .scenario h3 { font-size: 24px; }
+    .tags { display: flex; flex-wrap: wrap; gap: 8px; }
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: #eff6ff;
+      color: #1d4ed8;
+      border: 1px solid #bfdbfe;
+      font-size: 12px;
+      font-weight: 800;
+    }
+    .scenario-flow {
+      padding: 14px;
+      border-radius: 14px;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      color: #334155;
+      font-size: 13.5px;
+      font-weight: 720;
+    }
+
+    .module {
+      padding: 24px;
+      position: relative;
+      overflow: hidden;
+    }
+    .module::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 5px;
+      background: var(--accent, var(--blue));
+    }
+    .module-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 14px;
+      margin-bottom: 18px;
+    }
+    .module-head h3 { margin-bottom: 4px; }
+    .status {
+      flex: 0 0 auto;
+      padding: 5px 9px;
+      border-radius: 999px;
+      background: #ecfdf5;
+      color: #047857;
+      border: 1px solid #a7f3d0;
+      font-size: 12px;
+      font-weight: 850;
+    }
+    .module ul {
+      margin: 0;
+      padding-left: 18px;
+    }
+    .module li { margin: 6px 0; }
+    .module-split {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+    .subbox {
+      padding: 14px;
+      border-radius: 14px;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+    }
+    .subbox b { display: block; margin-bottom: 8px; }
+
+    .comparison {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+    }
+    .compare-col {
+      padding: 24px;
+      border-radius: var(--radius);
+      border: 1px solid var(--soft);
+      background: #fff;
+    }
+    .compare-col.self { background: #fff7ed; border-color: #fed7aa; }
+    .compare-col.platform { background: #ecfdf5; border-color: #86efac; }
+    .compare-row {
+      display: grid;
+      grid-template-columns: 120px 1fr;
+      gap: 14px;
+      padding: 12px 0;
+      border-top: 1px solid rgba(15,23,42,.08);
+      color: var(--muted);
+      font-size: 14px;
+    }
+    .compare-row b { color: var(--text); }
+
+    .timeline {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 16px;
+    }
+    .timeline-card {
+      padding: 22px;
+      border-top: 5px solid var(--accent, var(--blue));
+    }
+    .timeline-card h3 { font-size: 20px; }
+    .timeline-card ul {
+      margin: 12px 0 0;
+      padding-left: 18px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+    .timeline-card li { margin: 7px 0; }
+
+    .progress-hero-grid {
+      display: grid;
+      grid-template-columns: 1.15fr repeat(3, minmax(0, 1fr));
+      gap: 16px;
+      margin-bottom: 18px;
+    }
+    .progress-hero-card {
+      padding: 22px;
+      border-radius: var(--radius);
+      background: #fff;
+      border: 1px solid var(--soft);
+      box-shadow: 0 16px 42px rgba(15, 23, 42, .055);
+      min-height: 168px;
+    }
+    .progress-launch {
+      background: linear-gradient(135deg, #eff6ff, #ecfdf5);
+      border-color: #bfdbfe;
+    }
+    .progress-kicker {
+      display: inline-flex;
+      padding: 5px 9px;
+      border-radius: 999px;
+      background: #eff6ff;
+      color: var(--blue);
+      font-size: 11px;
+      font-weight: 900;
+      letter-spacing: .6px;
+      text-transform: uppercase;
+      margin-bottom: 14px;
+    }
+    .progress-hero-card h3 {
+      font-size: 21px;
+      margin-bottom: 10px;
+    }
+    .progress-hero-card p {
+      color: var(--muted);
+      font-size: 14px;
+      margin: 0;
+    }
+    .progress-plan-grid {
+      display: grid;
+      grid-template-columns: 1.35fr 1fr 1fr;
+      gap: 16px;
+    }
+    .progress-col {
+      padding: 20px;
+      border-radius: var(--radius);
+      background: #fff;
+      border: 1px solid var(--soft);
+      border-top: 5px solid var(--progress-accent, var(--blue));
+      box-shadow: 0 16px 42px rgba(15, 23, 42, .055);
+    }
+    .progress-col h3 {
+      font-size: 19px;
+      margin-bottom: 14px;
+    }
+    .progress-list {
+      display: grid;
+      gap: 10px;
+    }
+    .progress-item {
+      padding: 11px 12px;
+      border-radius: 12px;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      color: var(--muted);
+      font-size: 13.5px;
+      line-height: 1.5;
+    }
+    .progress-item b { color: var(--text); }
+
+    .process {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 12px;
+    }
+    .step {
+      padding: 18px;
+      border-radius: 16px;
+      border: 1px solid var(--soft);
+      background: #fff;
+      min-height: 150px;
+    }
+    .step small { color: var(--blue); font-weight: 900; }
+    .step b { display: block; font-size: 18px; margin: 8px 0; }
+    .step span { color: var(--muted); font-size: 13.5px; }
+
+    .callout {
+      margin-top: 22px;
+      padding: 22px 24px;
+      border-radius: 18px;
+      background: linear-gradient(135deg, #eff6ff, #ecfdf5);
+      border: 1px solid #bfdbfe;
+      color: #1e3a8a;
+      font-weight: 800;
+    }
+
+    .footer {
+      margin: 38px auto 0;
+      max-width: 1240px;
+      padding: 36px 24px 54px;
+      color: var(--muted);
+      display: flex;
+      justify-content: space-between;
+      gap: 18px;
+      border-top: 1px solid var(--soft);
+      flex-wrap: wrap;
+    }
+
+    @media (max-width: 1040px) {
+      .hero, .section-head, .arch-top, .arch-grid, .comparison { grid-template-columns: 1fr; }
+      .hero { min-height: auto; }
+      .cols-2, .cols-3, .cols-4, .capability-map, .arch-flow, .timeline, .progress-hero-grid, .progress-plan-grid, .process { grid-template-columns: 1fr; }
+      .hero-visual { min-height: 560px; }
+      h1 { letter-spacing: -2px; }
+      .nav-inner { align-items: flex-start; flex-direction: column; }
+      .nav-links { justify-content: flex-start; }
+    }
+    @media (max-width: 640px) {
+      section, header { padding: 42px 18px; }
+      .hero-visual { display: none; }
+      .module-split, .runtime-lanes, .component-grid, .arch-bottom, .arch-lanes, .arch-components { grid-template-columns: 1fr; }
+      .compare-row { grid-template-columns: 1fr; gap: 4px; }
+    }
+  </style>
+</head>
+<body>
+  <nav class="nav">
+    <div class="nav-inner">
+      <a class="brand" href="#top">星源 AgentKit</a>
+      <div class="nav-links">
+        <a href="#position">产品定位</a>
+        <a href="#scenarios">客户场景</a>
+        <a href="#architecture">架构能力</a>
+        <a href="#modules">产品模块</a>
+        <a href="#value">客户价值</a>
+        <a href="#roadmap">迭代计划</a>
+        <a href="#delivery">接入路径</a>
+      </div>
+    </div>
+  </nav>
+
+  <main>
+    <header class="hero" id="top">
+      <div>
+        <div class="eyebrow">Kingsoft Cloud Star Origin AgentKit</div>
+        <h1><span class="title-line gradient">星源 AgentKit</span><span class="title-line">企业级 Agent Infra 平台</span></h1>
+        <p>面向企业级 AI Agent 从原型到生产的全链路基础设施，提供部署托管、工具连接、安全执行、知识记忆、观测评测、权限治理和商业化服务能力。</p>
+        <p>AgentKit 不替客户定义业务 Agent 的策略与流程，而是帮助客户把 Agent 稳定、安全、可观测、可扩展地运行在云上。</p>
+        <div class="hero-actions">
+          <a class="button" href="#scenarios">查看适用场景</a>
+          <a class="button secondary" href="#modules">了解产品能力</a>
+        </div>
+      </div>
+      <div class="hero-visual" aria-label="AgentKit 能力闭环">
+        <div class="core"><div><b>AgentKit</b><span>部署 · 连接 · 运行 · 治理</span></div></div>
+        <div class="orbit o1"><b>运行底座</b><span>AgentEngine、Serverless、KCF、版本与生命周期管理</span></div>
+        <div class="orbit o2"><b>能力连接</b><span>MCP、Skills、知识库、记忆库、内部系统接入</span></div>
+        <div class="orbit o3"><b>安全执行</b><span>Sandbox、网络隔离、存储挂载、日志审计</span></div>
+        <div class="orbit o4"><b>治理闭环</b><span>Trace、Eval、AI 网关、权限与计量计费</span></div>
+      </div>
+    </header>
+
+    <section id="position">
+      <div class="section-head">
+        <h2>产品定位</h2>
+        <p>AgentKit 面向企业级 Agent 上线后的基础设施问题，回答两个核心问题：为什么 Agent 需要 Infra，以及 AgentKit 在企业 AI 架构中承担什么角色。</p>
+      </div>
+      <div class="grid cols-2" style="margin-bottom:18px">
+        <div class="card">
+          <div class="kicker">Why Agent Infra</div>
+          <h3>为什么 Agent 需要 Infra？</h3>
+          <p>一个 Agent 做 Demo 不难，真正进入业务使用或对外服务时，难点往往不在“能不能回答”，而在它能否稳定连接系统、执行任务、隔离风险、持续观测和迭代。</p>
+        </div>
+        <div class="card">
+          <div class="kicker">What Is AgentKit</div>
+          <h3>AgentKit 是什么？</h3>
+          <p>AgentKit 是面向企业级 Agent 应用的基础设施平台。它不替客户决定 Agent 业务逻辑，而是提供上线和服务化所需的部署、连接、运行和治理能力。</p>
+        </div>
+      </div>
+      <div class="grid cols-4">
+        <div class="metric"><b>连接</b><span>统一访问知识库、业务 API、内部系统和第三方工具，减少碎片化适配。</span></div>
+        <div class="metric"><b>运行</b><span>托管长链路任务、并发执行、代码运行和 Skill 调用，避免临时机器与脚本运维。</span></div>
+        <div class="metric"><b>安全</b><span>通过沙箱隔离、权限控制和边界约束，降低高自主 Agent 的执行风险。</span></div>
+        <div class="metric"><b>治理</b><span>回看调用链路、评测效果、定位问题并持续优化，支撑生产级上线。</span></div>
+      </div>
+    </section>
+
+    <section id="scenarios">
+      <div class="section-head">
+        <h2>典型客户使用场景</h2>
+        <p>AgentKit 适合已经明确 Agent 业务目标，但需要生产级运行、工具连接、隔离执行和治理能力的客户。以下场景既可以独立落地，也可以组合形成更复杂的企业 Agent 服务。</p>
+      </div>
+      <div class="grid cols-3">
+        <article class="scenario">
+          <div class="kicker">Reactive / Tool-Calling</div>
+          <h3>业务查询助手</h3>
+          <p>面向云资源控制台、运维查询、订单状态、产品文档问答等轻量交互场景，Agent 根据用户输入选择知识库或工具完成查询与建议。</p>
+          <div class="tags"><span class="tag">Agent Runtime</span><span class="tag">知识库</span><span class="tag">MCP 工具</span><span class="tag">AI 网关</span></div>
+          <div class="scenario-flow">用户问题 → Agent 托管运行 → 知识检索 / MCP 调用 → 模型生成 → 可追踪返回</div>
+          <p><b>客户价值：</b>减少人工查文档和查系统的成本，让控制台、客服台、售后台具备自然语言服务能力。</p>
+        </article>
+        <article class="scenario">
+          <div class="kicker">Workflow / Layered Pattern</div>
+          <h3>工作流型业务 Agent</h3>
+          <p>面向招聘、合规初审、售前问答、工单流转、财务核验等有明确 SOP 的场景，将 Agent 决策嵌入结构化业务流程。</p>
+          <div class="tags"><span class="tag">Agent Runtime</span><span class="tag">Skills</span><span class="tag">MCP 工具</span><span class="tag">Trace / Eval</span></div>
+          <div class="scenario-flow">业务入口 → Router 分流 → SOP 状态机 → Skills 执行动作 → Trace 与 Eval 闭环</div>
+          <p><b>客户价值：</b>将可重复流程固化为可调用、可复用、可评估的 Agent 服务，降低人工处理量并提升一致性。</p>
+        </article>
+        <article class="scenario">
+          <div class="kicker">Autonomous / Plan-and-Solve</div>
+          <h3>自主规划与研发辅助 Agent</h3>
+          <p>面向代码分析、漏洞复现、复杂资料调研、自动化验证等高自主性任务，Agent 需要规划、执行、反思并动态修正任务树。</p>
+          <div class="tags"><span class="tag">Agent Runtime</span><span class="tag">Sandbox</span><span class="tag">Skills</span><span class="tag">记忆库</span><span class="tag">Trace / Eval</span></div>
+          <div class="scenario-flow">目标输入 → Planner 生成任务树 → Sandbox 执行 → Skills 调用 → 反思修正 → 结果沉淀</div>
+          <p><b>客户价值：</b>在安全隔离环境中释放 Agent 自主执行能力，同时保留完整链路、效果评估和成本记录。</p>
+        </article>
+      </div>
+      <div class="grid cols-2" style="margin-top:18px">
+        <article class="scenario">
+          <div class="kicker">Enterprise Knowledge Agent</div>
+          <h3>企业知识助手 / 垂直 RAG</h3>
+          <p>将产品手册、行业规范、制度文档、合同资料、FAQ 和历史工单接入知识库，面向员工、客户或渠道提供可靠问答。</p>
+          <div class="tags"><span class="tag">知识库</span><span class="tag">记忆库</span><span class="tag">AI 网关</span><span class="tag">权限治理</span></div>
+          <div class="scenario-flow">文档上传 → 解析切片 → 检索重排 → RAG 回答 → 来源追溯 → 质量评测</div>
+        </article>
+        <article class="scenario">
+          <div class="kicker">Commercial Agent Service</div>
+          <h3>商业化 Agent 云上服务</h3>
+          <p>将面向客户的 Agent 服务运行到具备高可用、弹性扩缩、安全隔离、鉴权、计量计费和配套存储能力的云上环境。</p>
+          <div class="tags"><span class="tag">AgentEngine</span><span class="tag">AI 网关</span><span class="tag">Sandbox</span><span class="tag">计量计费</span></div>
+          <div class="scenario-flow">Agent 发布 → 网关接入 → 弹性运行 → 权限鉴权 → 用量计量 → SLA 保障</div>
+        </article>
+      </div>
+    </section>
+
+    <section id="architecture">
+      <div class="section-head">
+        <h2>AgentKit 能力地图</h2>
+        <p>业务 Agent 接入 AgentKit 后，可以复用一组平台级基础能力：从部署托管、工具连接、隔离执行，到知识记忆、评测观测和治理闭环，形成完整的 Agent Infra 能力闭环。</p>
+      </div>
+      <div class="capability-map">
+        <div class="cap" style="--accent:var(--blue)"><small>Runtime</small><b>部署托管</b><span>AgentEngine 承接 Agent 运行、版本、环境和生命周期管理。</span></div>
+        <div class="cap" style="--accent:var(--cyan)"><small>Connection</small><b>工具连接</b><span>MCP 广场、API 转 MCP、Skills 帮助 Agent 接入内部系统和工具。</span></div>
+        <div class="cap" style="--accent:var(--orange)"><small>Execution</small><b>隔离运行</b><span>Sandbox 为代码执行、浏览器操作、Skill 调用提供安全隔离环境。</span></div>
+        <div class="cap" style="--accent:var(--green)"><small>Context</small><b>知识与记忆</b><span>知识库支撑 RAG，记忆库支撑跨会话上下文和长期任务。</span></div>
+        <div class="cap" style="--accent:var(--purple)"><small>Governance</small><b>评测观测</b><span>Trace / Eval 让效果、调用链、权限和成本可追踪。</span></div>
+      </div>
+      <div class="runtime-arch">
+        <div class="runtime-arch-title">
+          <b>Agent 运行时连接架构</b>
+          <span>AgentEngine 作为运行中枢，统一连接上下文、工具、执行环境和治理能力</span>
+        </div>
+        <div class="arch-legend">
+          <div class="legend-item"><span class="legend-dot agentkit"></span>AgentKit 平台组件</div>
+          <div class="legend-item"><span class="legend-dot external"></span>外部接入对象</div>
+        </div>
+        <div class="arch-grid">
+          <div class="arch-column">
+            <div class="arch-node">
+              <small>Agent</small>
+              <b>业务 Agent</b>
+              <span>由业务团队定义任务、流程和策略，通过平台完成部署与运行。</span>
+            </div>
+            <div class="arch-node">
+              <small>Model</small>
+              <b>模型服务</b>
+              <span>对接星流模型 API，承接推理、工具选择和结果生成。</span>
+            </div>
+          </div>
+          <div class="arch-center">
+            <div class="arch-core arch-agentkit">
+              <div><b>AgentEngine 运行时</b><span>部署 · 调度 · 生命周期 · 运行观测</span></div>
+            </div>
+            <div class="arch-lanes">
+              <div class="arch-lane"><b>框架支持</b>Deep Agents / LangChain / LangGraph / OpenClaw</div>
+              <div class="arch-lane"><b>资源支持</b>Serverless / KCF / 弹性计算</div>
+            </div>
+          </div>
+          <div class="arch-components">
+            <div class="arch-chip arch-agentkit"><b>知识库</b><span>文档解析、切片、检索与 RAG 问答。</span></div>
+            <div class="arch-chip arch-agentkit"><b>记忆库</b><span>跨会话上下文、长期记忆与个性化状态。</span></div>
+            <div class="arch-chip arch-agentkit"><b>MCP 工具</b><span>统一接入 API、业务系统和第三方工具。</span></div>
+            <div class="arch-chip arch-agentkit"><b>Skills</b><span>封装可复用工具、流程和业务能力。</span></div>
+            <div class="arch-chip arch-agentkit"><b>Sandbox</b><span>隔离执行代码、浏览器操作和工具调用。</span></div>
+            <div class="arch-chip arch-agentkit"><b>AI 网关</b><span>路由、鉴权、计量计费和服务化发布。</span></div>
+          </div>
+        </div>
+        <div class="arch-flow">
+          <div class="arch-agentkit">Trace 全链路可观测</div>
+          <div class="arch-agentkit">Eval 效果评测闭环</div>
+          <div class="arch-agentkit">权限与安全治理</div>
+        </div>
+      </div>
+    </section>
+
+    <section id="modules">
+      <div class="section-head">
+        <h2>产品能力模块</h2>
+        <p>AgentKit 不是单一开发框架，而是一组面向生产级 Agent 的平台能力组合。客户可以按场景选择模块，也可以采用完整闭环方案。</p>
+      </div>
+      <div class="grid cols-2">
+        <article class="module" style="--accent:var(--blue)">
+          <div class="module-head"><div><div class="kicker">01 Runtime</div><h3>Agent 运行时</h3><p>Agent 的部署、发布、调试和生命周期管理底座。</p></div><span class="status">已上线 / 增强中</span></div>
+          <div class="module-split">
+            <div class="subbox"><b>核心能力</b><ul><li>组件关联、版本管理、回滚与在线调试。</li><li>运行详情、资源监控、自动休眠与弹性托管。</li><li>支持第三方 Agent 代码部署与容器化发布。</li></ul></div>
+            <div class="subbox"><b>适配场景</b><ul><li>已有 Agent 迁移到云上托管。</li><li>商业化 Agent 服务的高可用运行。</li><li>多 Agent 服务的统一发布与运维。</li></ul></div>
+          </div>
+        </article>
+
+        <article class="module" style="--accent:var(--cyan)">
+          <div class="module-head"><div><div class="kicker">02 Connection</div><h3>MCP 广场</h3><p>统一企业工具接入标准，让存量业务接口快速转化为 Agent 可调用工具。</p></div><span class="status">核心能力已上线</span></div>
+          <div class="module-split">
+            <div class="subbox"><b>核心能力</b><ul><li>官方服务与自定义 MCP Server 统一管理。</li><li>平台 API-Key 与客户密钥双模式鉴权。</li><li>公私网服务隔离、在线调试与参数校验。</li></ul></div>
+            <div class="subbox"><b>适配场景</b><ul><li>企业内部系统对接。</li><li>第三方 API 与私有化业务服务挂载。</li><li>规模化工具统一管控。</li></ul></div>
+          </div>
+        </article>
+
+        <article class="module" style="--accent:var(--green)">
+          <div class="module-head"><div><div class="kicker">03 Context</div><h3>知识库</h3><p>企业级知识管理与检索增强组件，为 Agent 提供可靠上下文。</p></div><span class="status">商用闭环推进中</span></div>
+          <div class="module-split">
+            <div class="subbox"><b>核心能力</b><ul><li>多格式文档解析、智能清洗切片。</li><li>向量、关键词、重排三模检索。</li><li>检索记录、错误文档重索引与权限标签隔离。</li></ul></div>
+            <div class="subbox"><b>适配场景</b><ul><li>企业知识助手、客服问答。</li><li>行业知识库、产品手册咨询。</li><li>私有资料检索与来源追溯。</li></ul></div>
+          </div>
+        </article>
+
+        <article class="module" style="--accent:var(--purple)">
+          <div class="module-head"><div><div class="kicker">04 Memory</div><h3>记忆库</h3><p>突破单次会话上下文限制，支持长期记忆、智能提取和跨会话状态。</p></div><span class="status">Mem0 兼容</span></div>
+          <div class="module-split">
+            <div class="subbox"><b>核心能力</b><ul><li>对话自动捕捉、长期保存与容灾备份。</li><li>场景策略、记忆治理、双模式检索。</li><li>租户隔离，保障企业记忆资产安全。</li></ul></div>
+            <div class="subbox"><b>适配场景</b><ul><li>长期陪伴式 Agent 与办公助手。</li><li>跨会话持续任务和个性化服务。</li><li>研发辅助 Agent 的任务上下文沉淀。</li></ul></div>
+          </div>
+        </article>
+
+        <article class="module" style="--accent:var(--orange)">
+          <div class="module-head"><div><div class="kicker">05 Execution</div><h3>Skill + 安全沙箱</h3><p>将可复用业务能力封装为 Skill，并通过 Sandbox 为代码、浏览器和工具调用提供隔离执行环境。</p></div><span class="status">核心能力已上线</span></div>
+          <div class="module-split">
+            <div class="subbox"><b>核心能力</b><ul><li>Skill 空间隔离、版本管控、上下线、回滚和复用。</li><li>AIO、代码、浏览器、自定义镜像按需启动。</li><li>VPC、存储挂载、日志审计、资源监控和自动休眠。</li></ul></div>
+            <div class="subbox"><b>适配场景</b><ul><li>企业标准化工作流和行业工具包封装。</li><li>Python 数据分析、代码运行和浏览器自动化。</li><li>高自主 Agent 的安全执行边界。</li></ul></div>
+          </div>
+        </article>
+
+        <article class="module" style="--accent:var(--green)">
+          <div class="module-head"><div><div class="kicker">06 Governance</div><h3>评测观测</h3><p>从主观体验转向量化评测，形成 Agent 效果优化、链路追踪和问题定位闭环。</p></div><span class="status">自研引擎上线</span></div>
+          <div class="module-split">
+            <div class="subbox"><b>核心能力</b><ul><li>评测集管理、多类型评估器和自动化实验。</li><li>Trace 溯源回答、工具调用和流程异常。</li><li>版本对比、得分分布、耗时与 Token 统计。</li></ul></div>
+            <div class="subbox"><b>适配场景</b><ul><li>Agent 版本验收与效果优化。</li><li>问答准确率和代码能力评测。</li><li>规模化 Agent 质量管控。</li></ul></div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section id="value">
+      <div class="section-head">
+        <h2>相比自建 AgentKit 的优势</h2>
+        <p>企业自建 Agent 底座通常需要分别处理工具适配、沙箱、安全、观测和运维问题。AgentKit 将这些生产级能力预先集成，帮助客户更快把 Agent 推向真实业务。</p>
+      </div>
+      <div class="comparison">
+        <div class="compare-col self">
+          <h3>自建 Agent Infra</h3>
+          <div class="compare-row"><b>工具接入</b><span>每个系统写一套适配代码，鉴权、参数转换、错误处理重复建设。</span></div>
+          <div class="compare-row"><b>代码执行</b><span>自建沙箱周期长，业务机器存在安全隐患。</span></div>
+          <div class="compare-row"><b>身份权限</b><span>密钥写在代码里，多 Agent 鉴权标准不统一，审计困难。</span></div>
+          <div class="compare-row"><b>记忆知识</b><span>自己拼 Redis、向量库和检索策略，效果与成本难控制。</span></div>
+          <div class="compare-row"><b>评测观测</b><span>出错靠人工排查，Token 消耗、调用链路和效果难以复盘。</span></div>
+        </div>
+        <div class="compare-col platform">
+          <h3>接入 AgentKit</h3>
+          <div class="compare-row"><b>工具接入</b><span>MCP 协议统一接入，存量 HTTP 接口可转 MCP，工具即插即用。</span></div>
+          <div class="compare-row"><b>代码执行</b><span>Sandbox 开箱即用，提供隔离实例、网络边界、存储挂载和日志审计。</span></div>
+          <div class="compare-row"><b>身份权限</b><span>平台鉴权、API-Key / JWT、Token Vault、最小权限和全链路审计。</span></div>
+          <div class="compare-row"><b>记忆知识</b><span>知识库、记忆库、三模检索、租户隔离与计量计费统一托管。</span></div>
+          <div class="compare-row"><b>评测观测</b><span>Trace 全链路可视化，Eval 自动化评估闭环，支撑持续优化。</span></div>
+        </div>
+      </div>
+      <div class="callout">AgentKit 的核心价值：让客户少做底座建设，把更多精力放在业务逻辑、行业知识和用户体验上。</div>
+    </section>
+
+    <section id="roadmap">
+      <div class="section-head">
+        <h2>产品进展与迭代计划</h2>
+        <p>围绕 630 商用版本已具备的产品能力、重点交付场景和后续底座深化节奏，形成从“可售闭环”到“规模化交付”的清晰产品推进路径。</p>
+      </div>
+      <div class="progress-hero-grid">
+        <article class="progress-hero-card progress-launch">
+          <span class="progress-kicker">商业化首发</span>
+          <h3>630 商用版本</h3>
+          <p>围绕知识库、记忆库、Agent 运行时、MCP、Sandbox 与评测观测形成首个可售闭环。</p>
+        </article>
+        <article class="progress-hero-card">
+          <span class="progress-kicker">SCENARIO 01</span>
+          <h3>企业级知识助手 / 垂直 RAG</h3>
+          <p>多格式文档解析、检索记录、文档管理、错误文档重索引，支撑企业知识问答与行业知识库。</p>
+        </article>
+        <article class="progress-hero-card">
+          <span class="progress-kicker">SCENARIO 02</span>
+          <h3>长记忆社交 / 办公 Agent</h3>
+          <p>对接 Mem0 与自研记忆库，支持永久存储、资源隔离、会话管理与跨会话上下文保持。</p>
+        </article>
+        <article class="progress-hero-card">
+          <span class="progress-kicker">SCENARIO 03</span>
+          <h3>受控代码执行 / 科学计算</h3>
+          <p>Sandbox 提供 Python、浏览器、自定义镜像、VPC 私网访问、KS3 / KPFS 挂载等隔离执行能力。</p>
+        </article>
+      </div>
+      <div class="progress-plan-grid">
+        <article class="progress-col" style="--progress-accent:#2f6cff">
+          <h3>630 商用版本</h3>
+          <div class="progress-list">
+            <div class="progress-item"><b>运行托管：</b>Agent 运行时支持组件关联、版本回滚、在线调试、详情监控，形成 Agent 发布与生命周期管理底座。</div>
+            <div class="progress-item"><b>工具连接：</b>MCP 广场、自定义 Server、SSE / StreamableHTTP、双 Key 模式，以及 OpenAPI MCP Server 能力，支撑企业工具统一接入。</div>
+            <div class="progress-item"><b>知识记忆：</b>知识库支持多格式解析、检索记录、重索引和计量计费；记忆库支持 Mem0、策略场景、会话管理和租户资源隔离。</div>
+            <div class="progress-item"><b>安全执行：</b>Sandbox 支持 AIO / Code / 浏览器 / 自定义模板、VPC、KS3 / KPFS，Skill 中心支持空间与 Skill 管理。</div>
+            <div class="progress-item"><b>评测观测：</b>Eval 支持 Trace 在线评测、效果评估和链路问题定位，补齐生产运行后的治理闭环。</div>
+          </div>
+        </article>
+        <article class="progress-col" style="--progress-accent:#cb851c">
+          <h3>7-8 月能力增强</h3>
+          <div class="progress-list">
+            <div class="progress-item"><b>运行时：</b>第三方 Agent 代码部署、自动休眠、A2A 注册发现</div>
+            <div class="progress-item"><b>MCP：</b>调用监控、日志检索、MCP HUB 工具集合</div>
+            <div class="progress-item"><b>记忆库：</b>策略自定义、记忆管理、模型可选、导入导出</div>
+            <div class="progress-item"><b>知识库：</b>权限 / 标签、源文件与图片还原、KS3 / 云文档 / 公开链接上传</div>
+          </div>
+        </article>
+        <article class="progress-col" style="--progress-accent:#7648df">
+          <h3>9 月-Q4 底座深化</h3>
+          <div class="progress-list">
+            <div class="progress-item"><b>知识库：</b>Embedding / Rerank / 推理模型上星流，支持独享型知识库</div>
+            <div class="progress-item"><b>Sandbox：</b>cube sandbox、动态挂载文件系统、GPU、PrivateLink</div>
+            <div class="progress-item"><b>评测：</b>Skill 评测、Prompt 评测</div>
+            <div class="progress-item"><b>模板与 SDK：</b>补全并强化实例配置可视化</div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section id="delivery">
+      <div class="section-head">
+        <h2>客户接入路径</h2>
+        <p>面向正式客户交流，建议从场景识别、架构方案、PoC 验证到生产发布分阶段推进，确保业务价值、资源规格、安全边界和交付节奏一致。</p>
+      </div>
+      <div class="process">
+        <div class="step"><small>Step 01</small><b>场景澄清</b><span>明确 Agent 类型、业务目标、用户规模、工具调用、数据来源和安全要求。</span></div>
+        <div class="step"><small>Step 02</small><b>架构设计</b><span>选择 Runtime、知识库、记忆库、MCP、Sandbox、网关和评测等模块组合。</span></div>
+        <div class="step"><small>Step 03</small><b>PoC 验证</b><span>接入样例数据和工具，验证回答质量、任务执行、隔离边界和调用链路。</span></div>
+        <div class="step"><small>Step 04</small><b>生产部署</b><span>完成资源规格、网络、安全、权限、监控、计费和容量规划配置。</span></div>
+        <div class="step"><small>Step 05</small><b>持续运营</b><span>基于 Trace / Eval / 网关数据持续优化效果、成本和服务稳定性。</span></div>
+      </div>
+      <div class="callout">面向客户的完整方案通常包含：Agent 运行架构、工具接入清单、安全隔离方案、资源规格、计量计费方式、上线计划和后续迭代路线。</div>
+    </section>
+  </main>
+
+  <div class="footer">
+    <span>星源 AgentKit · 企业级 Agent Infra 平台</span>
+    <span>客户交流材料 · 2026</span>
+  </div>
+</body>
+</html>
