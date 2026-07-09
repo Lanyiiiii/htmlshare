@@ -1,0 +1,287 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>模型 API 服务-2026H1 产品力总结</title>
+  <style>
+    :root {
+      --bg: #f7f9ff;
+      --ink: #172033;
+      --muted: #667085;
+      --line: #dce3ef;
+      --blue: #2f6bff;
+      --green: #159a67;
+      --orange: #f97316;
+      --red: #df4b4b;
+      --card: #ffffff;
+      --cyan: #0ea5b7;
+      --gold: #f59e0b;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", "Noto Sans CJK SC", Arial, sans-serif;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 12% 0%, rgba(47,107,255,.10), transparent 34%),
+        radial-gradient(circle at 90% 10%, rgba(14,165,183,.10), transparent 30%),
+        var(--bg);
+      line-height: 1.65;
+    }
+    .page { max-width: 1180px; margin: 0 auto; padding: 40px 28px 64px; }
+    header {
+      background: linear-gradient(135deg, #10204f 0%, #245bff 52%, #0ea5b7 100%);
+      color: white;
+      border-radius: 18px;
+      padding: 42px 44px;
+      box-shadow: 0 20px 46px rgba(21, 63, 159, .22);
+      position: relative;
+      overflow: hidden;
+    }
+    header::after { content: ""; position: absolute; right: -80px; top: -100px; width: 280px; height: 280px; border-radius: 50%; border: 48px solid rgba(255,255,255,.10); }
+    .eyebrow { font-size: 14px; letter-spacing: .08em; text-transform: uppercase; opacity: .78; }
+    h1 { margin: 10px 0 12px; font-size: 38px; line-height: 1.18; letter-spacing: 0; }
+    .subtitle { max-width: 880px; font-size: 17px; opacity: .88; }
+    .meta { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 24px; }
+    .pill { border: 1px solid rgba(255,255,255,.28); border-radius: 999px; padding: 6px 12px; font-size: 13px; background: rgba(255,255,255,.12); }
+    section { margin-top: 26px; }
+    section[data-contract-section] {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 28px;
+      box-shadow: 0 10px 30px rgba(16, 24, 40, .05);
+    }
+    h2 { margin: 0 0 18px; font-size: 24px; line-height: 1.28; }
+    h3 { margin: 22px 0 10px; font-size: 18px; }
+    p { margin: 10px 0; }
+    .summary-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; margin-top: 18px; }
+    .summary-card { padding: 18px; border-radius: 14px; border: 1px solid #dce7ff; background: #f7faff; }
+    .summary-card strong { display: block; font-size: 16px; margin-bottom: 8px; color: #12307a; }
+    .kpis { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; margin-top: 18px; }
+    .kpi { border: 1px solid var(--line); border-radius: 14px; padding: 16px; background: #fbfcff; }
+    .kpi .label { color: var(--muted); font-size: 13px; }
+    .kpi .value { font-size: 25px; font-weight: 750; margin-top: 4px; }
+    .kpi .note { color: var(--muted); font-size: 13px; margin-top: 4px; }
+    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; align-items: stretch; }
+    .chart-card { border: 1px solid var(--line); border-radius: 14px; padding: 16px; background: #fff; }
+    .chart-card img { width: 100%; height: auto; display: block; }
+    .note { color: var(--muted); font-size: 13px; }
+    .timeline { display: grid; gap: 12px; }
+    .month { display: grid; grid-template-columns: 72px 1fr; gap: 16px; padding: 14px 0; border-top: 1px solid #eef2f7; }
+    .month:first-child { border-top: 0; }
+    .month .tag { color: white; background: var(--blue); border-radius: 12px; height: 34px; display: flex; align-items: center; justify-content: center; font-weight: 700; }
+    .month ul { margin: 0; padding-left: 18px; }
+    .module-grid { display: grid; gap: 16px; }
+    .module-block { border: 1px solid var(--line); border-radius: 14px; padding: 18px; background: #fff; }
+    .module-block h3 { margin-top: 0; }
+    .module-summary { color: #344054; font-weight: 650; margin: 6px 0 12px; }
+    .module-highlight { display: flex; flex-wrap: wrap; gap: 8px; margin: 8px 0 12px; }
+    .chip { border: 1px solid #cfe0ff; background: linear-gradient(180deg,#ffffff,#f3f7ff); color: #174ea6; border-radius: 999px; padding: 5px 10px; font-size: 13px; font-weight: 700; }
+    .effect-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; margin: 16px 0; }
+    .effect-card { border: 1px solid #cfe0ff; background: linear-gradient(180deg, #ffffff 0%, #f6f9ff 100%); border-radius: 14px; padding: 16px; }
+    .effect-card .eyebrow2 { color: var(--muted); font-size: 13px; font-weight: 700; }
+    .effect-card .big { font-size: 26px; line-height: 1.2; font-weight: 820; margin: 6px 0; color: #12307a; }
+    .effect-card .desc { color: #475467; font-size: 13px; }
+    .impact { display: grid; gap: 7px; }
+    .impact .metric { display: inline-flex; align-items: baseline; gap: 6px; width: fit-content; border-radius: 999px; padding: 6px 11px; background: #eef6ff; color: #12307a; font-weight: 800; border: 1px solid #cfe0ff; }
+    .impact .metric b { font-size: 17px; }
+    .impact .caption { color: #475467; font-size: 13px; }
+    .thanks-card { margin-top: 18px; border: 1px solid #b9d4ff; border-radius: 18px; padding: 26px; background: linear-gradient(135deg, #f5f8ff 0%, #eefdfb 100%); text-align: center; }
+    .thanks-card strong { display: block; font-size: 26px; color: #12307a; margin-bottom: 8px; }
+    .thanks-card p { color: #344054; font-size: 16px; margin: 0; }
+    .month-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px 18px; margin-top: 10px; }
+    .month-item { border-top: 1px solid #edf1f7; padding-top: 10px; }
+    .month-item b { color: var(--blue); }
+    .matrix { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-top: 16px; }
+    .matrix-card { border: 1px solid var(--line); border-radius: 14px; padding: 16px; background: #fff; }
+    .matrix-card .num { font-size: 24px; font-weight: 750; color: var(--blue); }
+    .matrix-card .caption { color: var(--muted); font-size: 13px; }
+    table { width: 100%; border-collapse: collapse; margin-top: 14px; font-size: 14px; }
+    th, td { border-bottom: 1px solid #e6ebf3; padding: 12px 10px; text-align: left; vertical-align: top; }
+    th { background: #f6f8fc; color: #344054; font-weight: 700; }
+    .flow { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin-top: 16px; }
+    .flow div { border: 1px solid #d8e1f0; background: #f9fbff; border-radius: 14px; padding: 14px; text-align: center; font-weight: 700; min-height: 86px; display: flex; align-items: center; justify-content: center; }
+    .recommendations li, .questions li { margin: 8px 0; }
+    .small-callout { border-left: 4px solid var(--blue); background: #f7faff; padding: 12px 14px; border-radius: 10px; margin-top: 14px; }
+    @media (max-width: 860px) {
+      .summary-grid, .kpis, .two-col, .matrix, .flow, .month-list, .effect-grid { grid-template-columns: 1fr; }
+      header { padding: 30px 24px; }
+      h1 { font-size: 30px; }
+      .month { grid-template-columns: 1fr; }
+    }
+    @media print {
+      body { background: white; }
+      .page { max-width: none; padding: 0; }
+      section[data-contract-section], header { box-shadow: none; break-inside: avoid; }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <header>
+      <div class="eyebrow">2026 H1</div>
+      <h1>模型 API 服务-2026H1 产品力总结</h1>
+    </header>
+
+    <section data-contract-section="executive-summary">
+      <h2>Executive Summary</h2>
+      <div class="summary-grid">
+        <div class="summary-card">
+          <strong>产品力从“模型中转服务”升级为“企业级调用平台”。</strong>
+          上半年持续补齐模型广场、接入点、API Key、OpenAPI、在线调试、微调、用量统计、计费和额度管理，支撑模型服务规模化、可治理地调用。
+        </div>
+        <div class="summary-card">
+          <strong>经营质量成为产品力的一部分。</strong>
+          5 月初整体毛利率约 6.07%，6 月末提升到 22.66%；自建业务在 6.25-7.1 毛利率从 3.79% 提升至 42.31%，体现出资源调度与计量治理能力的经营效果。
+        </div>
+        <div class="summary-card">
+          <strong>资源调度能力开始沉淀为产品能力。</strong>
+          闲忙时差异化定价、闲时资源调整、水位调度、接入点后端模型切换、Token 额度管控和流式中断计费，共同构成损益提升的产品基础。
+        </div>
+      </div>
+      <div class="kpis">
+        <div class="kpi"><div class="label">最新整体毛利率</div><div class="value">22.66%</div><div class="note">6.25-7.1，仅外部口径</div></div>
+        <div class="kpi"><div class="label">最新整体毛利</div><div class="value">186.06万</div><div class="note">环比 +114.27 万</div></div>
+        <div class="kpi"><div class="label">自建毛利率提升</div><div class="value">42.31%</div><div class="note">3.79% -> 42.31%</div></div>
+        <div class="kpi"><div class="label">闲时单周收益峰值</div><div class="value">67.99万</div><div class="note">5.16-5.22</div></div>
+      </div>
+      <p class="note">说明：“环比 +114.27 万”来自《Token损益-By周.pdf》6.25-7.1 损益页，指整体毛利从上周 71.79 万提升到本周 186.06 万，差额为 114.27 万。</p>
+    </section>
+
+    <section data-contract-section="key-findings">
+      <h2>H1 产品进展</h2>
+      <p><strong>结合产品动态和月度计划表，上半年进展可以归纳为五类能力。</strong> 月度计划表补充了版本内上线需求，尤其是协议兼容、模型生态、内部调度和运营后台能力。</p>
+      <div class="module-grid">
+        <div class="module-block">
+          <h3>模型生态、接入与路由</h3>
+          <p class="module-summary">重点从“多模型上线”推进到“模型类型、接入方式和路由治理一起补齐”。</p>
+          <div class="module-highlight"><span class="chip">多模型/多模态扩容</span><span class="chip">国际版与渠道定价</span><span class="chip">接入点治理</span><span class="chip">微调与模型生态补齐</span></div>
+          <div class="month-list">
+            <div class="month-item"><b>1月：</b>模型广场上线 qwen3-235b、kimi、qwen3-vl-flash、mgg-7、mgg-6、mos-1、wan2.6-i2v、kling-v2-6、kling-video-o1；新增在线推理接入点，支持 API Key 授权、项目制划分、接入点维度限流和监控；支持 OpenAPI。</div>
+            <div class="month-item"><b>2月：</b>国际版 API 服务支持 mc 系列并上线 mco-4；上线 qwen3-30b、glm-5、minimax-m2.5、qwen-flash、qwen-plus、Eleven v3、eleven_flash_v2、wan 2.6 t2i；海外模型采用美元定价；语音模型类别进入模型广场和开通管理。</div>
+            <div class="month-item"><b>3月：</b>新增接入点级 Token 额度禁用；接入点监控覆盖国内版/国际版；多集群管理、mgg 模型支持通过接入点 ID 调用；引入 mino v2 pro、minimax m2.7、hunyuan-t1-vision、Tencent HY Vision 1.5 Instruct。</div>
+            <div class="month-item"><b>4月：</b>支持接入点后端模型切换；上线 xiaomi mimo-omin、Xiaomi MiMo-V2-TTS、qwen3.5-397b-a17b、kling-v3-omni、qwen3.5-flash、qwen3-embedding-8b、text-embedding-3-small、qwen3-coder-plus、kling-v3；多模态模型支持公网访问；声音克隆接口、Embedding、Coder、视频模型等能力进入模型生态。</div>
+            <div class="month-item"><b>5月：</b>支持批量修改和删除接入点；上线 GPT-image-2、可灵 v3/v3 omini、qwen 3.6 plus；适配 Claude CC 新参数、Gemini v1beta API；预置推理点 ID 调用下线；模型微调模块上线，支持任务创建、任务配置、状态管理、详情和监控、SFT、LoRA、标准化数据接入、OpenAPI、日志和事件查询。</div>
+            <div class="month-item"><b>6月：</b>上线 speech 系列、glm-5.2、glm-5-turbo、qwen3.6-flash、qwen3.7 max、seedance 2.0-domestic，国际版上线 Eleven v3、eleven_flash_v2、eleven_flash_v2_5、deepseek v4 pro；海外模型支持自定义选择接入渠道并区分定价；已下线模型对应接入点状态置为异常；可灵自定义主体查询、seedance 2.0 计费项、视频/图片生成相关接口继续补齐。</div>
+          </div>
+        </div>
+        <div class="module-block">
+          <h3>权限与额度：把调用风险前置到产品流程</h3>
+          <p class="module-summary">重点从 API Key 管理扩展到接入点、项目、免费额度、推理限额等多层控制。</p>
+          <div class="module-highlight"><span class="chip">API Key 权限</span><span class="chip">接入点额度</span><span class="chip">免费额度预警</span><span class="chip">自动禁用</span></div>
+          <div class="month-list">
+            <div class="month-item"><b>1月：</b>API Key 权限管理支持自定义接入点权限范围；配额管理支持账号下配额与限制，并可为指定项目分配配额；免费额度使用情况支持云监控提醒；未配置 API Key 时全页面提示。</div>
+            <div class="month-item"><b>2月：</b>API Key 数量限制逻辑修改，数量从子用户 20 个提升到主账号 1000 个；KSCC 创建的 API Key 禁止用户通过 OpenAPI 操作；模型广场和开通管理支持语音模型类别。</div>
+            <div class="month-item"><b>3月：</b>接入点维度 Token 使用额度禁用；API Key 自定义权限配置支持全选后反选部分模型；接入点禁用流程优化。</div>
+            <div class="month-item"><b>4月：</b>开通管理支持调整模型推理限额和报警；开通管理展示开通状态、模型定价信息和模型详情页跳转；接入点设置限额后自动预警。</div>
+            <div class="month-item"><b>5月：</b>API Key 权限管控支持管理员配置账号成员仅可编辑自己的 API Key；批量开通模型/API Key 权限管理支持按模型类型筛选；API Key 授权时未开通模型给出提示。</div>
+            <div class="month-item"><b>6月：</b>免费额度耗尽预警及通知上线；开通与批量开通增加计费风险提示；免费额度 80%/100% 触发短信、邮件、站内信与页面弹窗，并支持自动禁用。</div>
+          </div>
+        </div>
+        <div class="module-block">
+          <h3>计量与成本透明：让模型选择和调用成本可见</h3>
+          <p class="module-summary">重点是把模型成本、用量、缓存和计费规则变成可查询、可提示、可解释的产品信息。</p>
+          <div class="module-highlight"><span class="chip">用量维度扩展</span><span class="chip">价格字段透明</span><span class="chip">缓存/接入点统计</span><span class="chip">流式中断计量</span></div>
+          <div class="month-list">
+            <div class="month-item"><b>1月：</b>用量统计增加图片数量、视频时长统计；模型详情页/模型对比页增加名词解释、文档跳转和阶梯计费展示优化。</div>
+            <div class="month-item"><b>2月：</b>海外模型采用美元定价，列表价和官方列表价统一。</div>
+            <div class="month-item"><b>3月：</b>用量统计支持语音模型信息展示。</div>
+            <div class="month-item"><b>4月：</b>/v1/models 接口补充模型上下文长度、最大输出长度、输入/输出类型及价格字段；用量统计支持按接入点、缓存、API Key 等维度查看。</div>
+            <div class="month-item"><b>5月：</b>模型广场 hover 模型卡片可查看开通状态、免费额度使用情况、模型信息；开通管理中增加写入缓存不能用免费额度提示。</div>
+            <div class="month-item"><b>6月：</b>国内模型流式输出主动中断场景按中断前已成功输出 Token 计量计费。</div>
+          </div>
+        </div>
+        <div class="module-block">
+          <h3>协议兼容与工具调用能力</h3>
+          <p class="module-summary">重点是减少模型协议差异对调用方的影响，提升工具链兼容度和异常可解释性。</p>
+          <div class="module-highlight"><span class="chip">官方参数对齐</span><span class="chip">Cursor / Claude Code</span><span class="chip">Response API</span><span class="chip">错误码与 Header 治理</span></div>
+          <div class="month-list">
+            <div class="month-item"><b>1月：</b>DeepSeek 深度思考参数对齐官方；自建模型支持前缀续写；显式缓存 Claude 相关能力排期推进。</div>
+            <div class="month-item"><b>2月：</b>文件查询接口禁用；国际版 mc 系列模型接入后补齐海外调用协议链路。</div>
+            <div class="month-item"><b>3月：</b>网关兼容 mog 流式返回 event/data 字段；GLM 深度思考与官方一致；GLM require=null 参数兼容；兼容请求内容未闭合异常；Anthropic 协议 tool_stream 默认为 true；现有错误码统一。</div>
+            <div class="month-item"><b>4月：</b>联网搜索兼容智谱官方格式；上下文超限时报错内容透传；GLM-5 思考参数与第三方映射并增加 thinking_adaptive；兼容 Cursor、Claude Code beta 特性；/v1/models 返回内容增强。</div>
+            <div class="month-item"><b>5月：</b>支持 Response API；上线在线调用调试；DeepSeek v4 pro reasoning_effort 参数兼容；Gemini 支持 v1beta API；arguments 解析修复；可灵 Callback 接口支持自定义 URL。</div>
+            <div class="month-item"><b>6月：</b>DS v4 pro/flash、GLM5/5.1 的 websearch、cache tokens 字段对齐原厂；response header 屏蔽来源 header；mgg 系列原始 error message 重写；可灵查询任务接口支持多租户隔离。</div>
+          </div>
+        </div>
+        <div class="module-block">
+          <h3>运营与精细化调度能力</h3>
+          <p class="module-summary">重点是把内部流量治理、可观测、限流、自动切流能力产品化，服务损益提升目标。</p>
+          <div class="module-highlight"><span class="chip">水位监控</span><span class="chip">闲时调度</span><span class="chip">限流白屏化</span><span class="chip">自动化切流</span></div>
+          <div class="month-list">
+            <div class="month-item"><b>1月：</b>底层集群资源部署监控、模型多 provider 路由策略查询进入月度重点，开始补齐内部调度可观测基础。</div>
+            <div class="month-item"><b>2月：</b>国际版调用、海外定价和 API Key 管控补齐，为后续多版本、多渠道调用治理提供基础。</div>
+            <div class="month-item"><b>3月：</b>自建集群水位相关监控与告警、服务监控面板、不可用 provider 自动切换一期、错误码统一进入版本计划。</div>
+            <div class="month-item"><b>4月：</b>管理后台能力增强：第三方服务评测能力、服务管理、网关闲时调度逻辑、考虑 TPM 水位的自动调度、主动监测返回内容并中断。</div>
+            <div class="month-item"><b>5月：</b>用户限流配置和专属路由限流白屏化、个人账户限流配置、最后修改人与历史记录、路由改造与调度、网关 session 保持能力上线或提测。</div>
+            <div class="month-item"><b>6月：</b>专属路由 RPM 限流、长文本负载分发控制、自动化切流一期、服务质量签名验证定时任务等内部调度能力继续推进。</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section data-contract-section="visual-evidence">
+      <h2>损益趋势：5 到 6 月毛利质量稳步提升</h2>
+      <p><strong>随着 5 到 6 月精细化运营动作逐步落地，毛利质量有了稳步提升。</strong> 6.25-7.1 整体收入 820.99 万，成本 634.94 万，毛利 186.06 万，毛利率 22.66%；对比上一周期，收入增长 12.7%，成本下降 3.3%，毛利增加 114.27 万。</p>
+      <div class="chart-card"><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDgwIDUwMCIgcm9sZT0iaW1nIiBhcmlhLWxhYmVsPSJUb2tlbiDmjZ/nm4rlkajluqbotovlir8iPgogIDxzdHlsZT4KICAgIHRleHQgeyBmb250LWZhbWlseTogLWFwcGxlLXN5c3RlbSwgQmxpbmtNYWNTeXN0ZW1Gb250LCAnUGluZ0ZhbmcgU0MnLCAnTWljcm9zb2Z0IFlhSGVpJywgQXJpYWwsIHNhbnMtc2VyaWY7IH0KICAgIC50aXRsZSB7IGZvbnQtc2l6ZTogMjRweDsgZm9udC13ZWlnaHQ6IDgwMDsgZmlsbDogIzE3MjAzMzsgfQogICAgLmF4aXMgeyBmb250LXNpemU6IDEzcHg7IGZpbGw6ICM2NjcwODU7IH0KICAgIC52YWx1ZSB7IGZvbnQtc2l6ZTogMTNweDsgZm9udC13ZWlnaHQ6IDcwMDsgZmlsbDogIzFmMmQzZDsgfQogICAgLm1hcmdpbiB7IGZvbnQtc2l6ZTogMTNweDsgZm9udC13ZWlnaHQ6IDcwMDsgZmlsbDogIzlhMzQxMjsgfQogICAgLmxlZ2VuZCB7IGZvbnQtc2l6ZTogMTRweDsgZmlsbDogIzM0NDA1NDsgfQogIDwvc3R5bGU+CiAgPHJlY3Qgd2lkdGg9IjEwODAiIGhlaWdodD0iNTAwIiByeD0iMTgiIGZpbGw9IiNmZmZmZmYiLz4KICA8dGV4dCB4PSIyNCIgeT0iMzQiIGNsYXNzPSJ0aXRsZSI+VG9rZW4g5o2f55uK5ZGo5bqm6LaL5Yq/PC90ZXh0PgogIDxnIHRyYW5zZm9ybT0idHJhbnNsYXRlKDcwMCwyMikiPgogICAgPHJlY3QgeD0iMCIgeT0iMCIgd2lkdGg9IjE2IiBoZWlnaHQ9IjE2IiByeD0iNCIgZmlsbD0iIzJGNkJGRiIvPjx0ZXh0IHg9IjIzIiB5PSIxMyIgY2xhc3M9ImxlZ2VuZCI+5pS25YWl77yI5LiH5YWD77yJPC90ZXh0PgogICAgPGxpbmUgeDE9IjEyNiIgeTE9IjgiIHgyPSIxNDgiIHkyPSI4IiBzdHJva2U9IiMyOEEwNkEiIHN0cm9rZS13aWR0aD0iNCIvPjx0ZXh0IHg9IjE1NSIgeT0iMTMiIGNsYXNzPSJsZWdlbmQiPuavm+WIqe+8iOS4h+WFg++8iTwvdGV4dD4KICAgIDxsaW5lIHgxPSIyNjAiIHkxPSI4IiB4Mj0iMjgyIiB5Mj0iOCIgc3Ryb2tlPSIjRjA2NDQ5IiBzdHJva2Utd2lkdGg9IjQiLz48dGV4dCB4PSIyODkiIHk9IjEzIiBjbGFzcz0ibGVnZW5kIj7mr5vliKnnjoc8L3RleHQ+CiAgPC9nPgogIDxnPjxsaW5lIHgxPSIxMzgiIHkxPSI0MDYuMCIgeDI9IjEwMDAiIHkyPSI0MDYuMCIgc3Ryb2tlPSIjRTdFQ0Y1Ii8+PHRleHQgeD0iMTI2IiB5PSI0MTAuMCIgdGV4dC1hbmNob3I9ImVuZCIgY2xhc3M9ImF4aXMiPjA8L3RleHQ+PGxpbmUgeDE9IjEzOCIgeTE9IjMyMC4zIiB4Mj0iMTAwMCIgeTI9IjMyMC4zIiBzdHJva2U9IiNFN0VDRjUiLz48dGV4dCB4PSIxMjYiIHk9IjMyNC4zIiB0ZXh0LWFuY2hvcj0iZW5kIiBjbGFzcz0iYXhpcyI+NDAwPC90ZXh0PjxsaW5lIHgxPSIxMzgiIHkxPSIyMzQuNiIgeDI9IjEwMDAiIHkyPSIyMzQuNiIgc3Ryb2tlPSIjRTdFQ0Y1Ii8+PHRleHQgeD0iMTI2IiB5PSIyMzguNiIgdGV4dC1hbmNob3I9ImVuZCIgY2xhc3M9ImF4aXMiPjgwMDwvdGV4dD48bGluZSB4MT0iMTM4IiB5MT0iMTQ5LjAiIHgyPSIxMDAwIiB5Mj0iMTQ5LjAiIHN0cm9rZT0iI0U3RUNGNSIvPjx0ZXh0IHg9IjEyNiIgeT0iMTUzLjAiIHRleHQtYW5jaG9yPSJlbmQiIGNsYXNzPSJheGlzIj4xMjAwPC90ZXh0PjxsaW5lIHgxPSIxMzgiIHkxPSI3NC4wIiB4Mj0iMTAwMCIgeTI9Ijc0LjAiIHN0cm9rZT0iI0U3RUNGNSIvPjx0ZXh0IHg9IjEyNiIgeT0iNzguMCIgdGV4dC1hbmNob3I9ImVuZCIgY2xhc3M9ImF4aXMiPjE2MDA8L3RleHQ+PC9nPgogIDxsaW5lIHgxPSIxMzgiIHkxPSI0MDYiIHgyPSIxMDAwIiB5Mj0iNDA2IiBzdHJva2U9IiNDQkQ1RTEiLz4KICA8Zz48cmVjdCB4PSIxMTUuMCIgeT0iMjQ1LjIiIHdpZHRoPSI0NiIgaGVpZ2h0PSIxNjAuOCIgcng9IjgiIGZpbGw9IiMyRjZCRkYiIG9wYWNpdHk9Ii44OCIvPjxyZWN0IHg9IjI4Ny40IiB5PSIxMDguMSIgd2lkdGg9IjQ2IiBoZWlnaHQ9IjI5Ny45IiByeD0iOCIgZmlsbD0iIzJGNkJGRiIgb3BhY2l0eT0iLjg4Ii8+PHJlY3QgeD0iNDU5LjgiIHk9IjEyNC4yIiB3aWR0aD0iNDYiIGhlaWdodD0iMjgxLjgiIHJ4PSI4IiBmaWxsPSIjMkY2QkZGIiBvcGFjaXR5PSIuODgiLz48cmVjdCB4PSI2MzIuMiIgeT0iMjQ1LjEiIHdpZHRoPSI0NiIgaGVpZ2h0PSIxNjAuOSIgcng9IjgiIGZpbGw9IiMyRjZCRkYiIG9wYWNpdHk9Ii44OCIvPjxyZWN0IHg9IjgwNC42IiB5PSIyNDkuOSIgd2lkdGg9IjQ2IiBoZWlnaHQ9IjE1Ni4xIiByeD0iOCIgZmlsbD0iIzJGNkJGRiIgb3BhY2l0eT0iLjg4Ii8+PHJlY3QgeD0iOTc3LjAiIHk9IjIzMC4xIiB3aWR0aD0iNDYiIGhlaWdodD0iMTc1LjkiIHJ4PSI4IiBmaWxsPSIjMkY2QkZGIiBvcGFjaXR5PSIuODgiLz48L2c+CiAgPHBhdGggZD0iTSAxMzguMCAzOTYuMiBMIDMxMC40IDM2OC45IEwgNDgyLjggMzI1LjQgTCA2NTUuMiAzNjguNSBMIDgyNy42IDM4OC4wIEwgMTAwMC4wIDM2Ni4xIiBmaWxsPSJub25lIiBzdHJva2U9IiMyOEEwNkEiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+PGNpcmNsZSBjeD0iMTM4LjAiIGN5PSIzOTYuMiIgcj0iNS41IiBmaWxsPSIjMjhBMDZBIi8+PGNpcmNsZSBjeD0iMzEwLjQiIGN5PSIzNjguOSIgcj0iNS41IiBmaWxsPSIjMjhBMDZBIi8+PGNpcmNsZSBjeD0iNDgyLjgiIGN5PSIzMjUuNCIgcj0iNS41IiBmaWxsPSIjMjhBMDZBIi8+PGNpcmNsZSBjeD0iNjU1LjIiIGN5PSIzNjguNSIgcj0iNS41IiBmaWxsPSIjMjhBMDZBIi8+PGNpcmNsZSBjeD0iODI3LjYiIGN5PSIzODguMCIgcj0iNS41IiBmaWxsPSIjMjhBMDZBIi8+PGNpcmNsZSBjeD0iMTAwMC4wIiBjeT0iMzY2LjEiIHI9IjUuNSIgZmlsbD0iIzI4QTA2QSIvPgogIDxwYXRoIGQ9Ik0gMTM4LjAgMzQzLjAgTCAzMTAuNCAyNzYuOCBMIDQ4Mi44IDEyNy43IEwgNjU1LjIgMTYzLjggTCA4MjcuNiAyODYuNyBMIDEwMDAuMCAxNzAuOSIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjRjA2NDQ5IiBzdHJva2Utd2lkdGg9IjQiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIvPjxjaXJjbGUgY3g9IjEzOC4wIiBjeT0iMzQzLjAiIHI9IjUuNSIgZmlsbD0iI0YwNjQ0OSIvPjx0ZXh0IHg9IjEzOC4wIiB5PSIzMjUuMCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgY2xhc3M9Im1hcmdpbiI+Ni4xJTwvdGV4dD48Y2lyY2xlIGN4PSIzMTAuNCIgY3k9IjI3Ni44IiByPSI1LjUiIGZpbGw9IiNGMDY0NDkiLz48dGV4dCB4PSIzMTAuNCIgeT0iMjU4LjgiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGNsYXNzPSJtYXJnaW4iPjEyLjQlPC90ZXh0PjxjaXJjbGUgY3g9IjQ4Mi44IiBjeT0iMTI3LjciIHI9IjUuNSIgZmlsbD0iI0YwNjQ0OSIvPjx0ZXh0IHg9IjUxMC44IiB5PSIxMDEuNyIgdGV4dC1hbmNob3I9Im1pZGRsZSIgY2xhc3M9Im1hcmdpbiI+MjYuOCU8L3RleHQ+PGNpcmNsZSBjeD0iNjU1LjIiIGN5PSIxNjMuOCIgcj0iNS41IiBmaWxsPSIjRjA2NDQ5Ii8+PHRleHQgeD0iNjU1LjIiIHk9IjE0My44IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBjbGFzcz0ibWFyZ2luIj4yMy4zJTwvdGV4dD48Y2lyY2xlIGN4PSI4MjcuNiIgY3k9IjI4Ni43IiByPSI1LjUiIGZpbGw9IiNGMDY0NDkiLz48dGV4dCB4PSI4MjcuNiIgeT0iMjY4LjciIHRleHQtYW5jaG9yPSJtaWRkbGUiIGNsYXNzPSJtYXJnaW4iPjExLjUlPC90ZXh0PjxjaXJjbGUgY3g9IjEwMDAuMCIgY3k9IjE3MC45IiByPSI1LjUiIGZpbGw9IiNGMDY0NDkiLz48dGV4dCB4PSIxMDAwLjAiIHk9IjE0Ni45IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBjbGFzcz0ibWFyZ2luIj4yMi43JTwvdGV4dD4KICA8Zz48dGV4dCB4PSIxMzguMCIgeT0iMjM1LjIiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGNsYXNzPSJ2YWx1ZSI+NzUxPC90ZXh0Pjx0ZXh0IHg9IjMxMC40IiB5PSI5OC4xIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBjbGFzcz0idmFsdWUiPjEzOTE8L3RleHQ+PHRleHQgeD0iNDgyLjgiIHk9IjExNC4yIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBjbGFzcz0idmFsdWUiPjEzMTY8L3RleHQ+PHRleHQgeD0iNjU1LjIiIHk9IjIzNS4xIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBjbGFzcz0idmFsdWUiPjc1MTwvdGV4dD48dGV4dCB4PSI4MjcuNiIgeT0iMjM5LjkiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGNsYXNzPSJ2YWx1ZSI+NzI5PC90ZXh0Pjx0ZXh0IHg9IjEwMDAuMCIgeT0iMjIwLjEiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGNsYXNzPSJ2YWx1ZSI+ODIxPC90ZXh0Pjx0ZXh0IHg9IjEzOC4wIiB5PSI0NDAiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGNsYXNzPSJheGlzIj41LjEtNS43PC90ZXh0Pjx0ZXh0IHg9IjMxMC40IiB5PSI0NDAiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGNsYXNzPSJheGlzIj41LjgtNS4xNDwvdGV4dD48dGV4dCB4PSI0ODIuOCIgeT0iNDQwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBjbGFzcz0iYXhpcyI+Ni40LTYuMTA8L3RleHQ+PHRleHQgeD0iNjU1LjIiIHk9IjQ0MCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgY2xhc3M9ImF4aXMiPjYuMTEtNi4xNTwvdGV4dD48dGV4dCB4PSI4MjcuNiIgeT0iNDQwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBjbGFzcz0iYXhpcyI+Ni4xOC02LjI0PC90ZXh0Pjx0ZXh0IHg9IjEwMDAuMCIgeT0iNDQwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBjbGFzcz0iYXhpcyI+Ni4yNS03LjE8L3RleHQ+PC9nPgogIDx0ZXh0IHg9IjEzOCIgeT0iNDc0IiBjbGFzcz0iYXhpcyI+5aSH5rOo77ya5pWw5o2u5a2Y5Zyo5LuF5aSW6YOo5Y+j5b6E44CB5aSW6YOoK+WGhemDqOOAgTXlpKkvN+WkqeetieWPo+W+hOW3ruW8gu+8m+ivpeWbvueUqOS6juWRiOeOsOi2i+WKv++8jOS4jeS9nOS4uue7n+S4gOi0ouWKoeWPo+W+hOabsue6v+OAgjwvdGV4dD4KPC9zdmc+" alt="Token 损益周度趋势图" /></div>
+      <p class="note">备注：数据存在仅外部口径、外部+内部、5 天/7 天等口径差异，图表用于表达趋势，不替代正式财务口径。</p>
+      <div class="two-col" style="margin-top:18px;">
+        <div class="chart-card"><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA5ODAgNDcwIiByb2xlPSJpbWciIGFyaWEtbGFiZWw9IuiHquW7uuWSjOesrOS4ieaWueaNn+ebiuaLhuinoyI+CiAgPHN0eWxlPgogICAgdGV4dCB7IGZvbnQtZmFtaWx5OiAtYXBwbGUtc3lzdGVtLCBCbGlua01hY1N5c3RlbUZvbnQsICdQaW5nRmFuZyBTQycsICdNaWNyb3NvZnQgWWFIZWknLCBBcmlhbCwgc2Fucy1zZXJpZjsgfQogICAgLnRpdGxlIHsgZm9udC1zaXplOiAyNHB4OyBmb250LXdlaWdodDogODAwOyBmaWxsOiAjMTcyMDMzOyB9CiAgICAuYXhpcyB7IGZvbnQtc2l6ZTogMTNweDsgZmlsbDogIzY2NzA4NTsgfQogICAgLnZhbHVlIHsgZm9udC1zaXplOiAxM3B4OyBmb250LXdlaWdodDogNzAwOyBmaWxsOiAjMWYyZDNkOyB9CiAgICAubWFyZ2luIHsgZm9udC1zaXplOiAxM3B4OyBmb250LXdlaWdodDogODAwOyBmaWxsOiAjOWEzNDEyOyB9CiAgICAuZ3JlZW4geyBmb250LXNpemU6IDEzcHg7IGZvbnQtd2VpZ2h0OiA4MDA7IGZpbGw6ICMxNTdhNGU7IH0KICAgIC5sZWdlbmQgeyBmb250LXNpemU6IDE0cHg7IGZpbGw6ICMzNDQwNTQ7IH0KICA8L3N0eWxlPgogIDxyZWN0IHdpZHRoPSI5ODAiIGhlaWdodD0iNDcwIiByeD0iMTgiIGZpbGw9IiNmZmZmZmYiLz4KICA8dGV4dCB4PSIyNCIgeT0iMzQiIGNsYXNzPSJ0aXRsZSI+6Ieq5bu6IC8g56ys5LiJ5pa55o2f55uK5ouG6KejPC90ZXh0PgogIDxnIHRyYW5zZm9ybT0idHJhbnNsYXRlKDQ3MCwyMikiPgogICAgPHJlY3QgeD0iMCIgeT0iMCIgd2lkdGg9IjE2IiBoZWlnaHQ9IjE2IiByeD0iNCIgZmlsbD0iIzI0NkJGRSIvPjx0ZXh0IHg9IjIzIiB5PSIxMyIgY2xhc3M9ImxlZ2VuZCI+6Ieq5bu65pS25YWlPC90ZXh0PgogICAgPHJlY3QgeD0iOTQiIHk9IjAiIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiIgcng9IjQiIGZpbGw9IiM3MUE3RkYiLz48dGV4dCB4PSIxMTciIHk9IjEzIiBjbGFzcz0ibGVnZW5kIj7nrKzkuInmlrnmlLblhaU8L3RleHQ+CiAgICA8bGluZSB4MT0iMjMwIiB5MT0iOCIgeDI9IjI1NCIgeTI9IjgiIHN0cm9rZT0iI0YwNjQ0OSIgc3Ryb2tlLXdpZHRoPSI0Ii8+PHRleHQgeD0iMjYxIiB5PSIxMyIgY2xhc3M9ImxlZ2VuZCI+6Ieq5bu65q+b5Yip546HPC90ZXh0PgogICAgPGxpbmUgeDE9IjM3MCIgeTE9IjgiIHgyPSIzOTQiIHkyPSI4IiBzdHJva2U9IiMyM0EzNkQiIHN0cm9rZS13aWR0aD0iNCIvPjx0ZXh0IHg9IjQwMSIgeT0iMTMiIGNsYXNzPSJsZWdlbmQiPuesrOS4ieaWueavm+WIqeeOhzwvdGV4dD4KICA8L2c+CiAgPGc+PGxpbmUgeDE9Ijc0IiB5MT0iMzk2LjAiIHgyPSI5MTYiIHkyPSIzOTYuMCIgc3Ryb2tlPSIjRTdFQ0Y1Ii8+PHRleHQgeD0iNjIiIHk9IjQwMC4wIiB0ZXh0LWFuY2hvcj0iZW5kIiBjbGFzcz0iYXhpcyI+MDwvdGV4dD48bGluZSB4MT0iNzQiIHkxPSIzMDAuMCIgeDI9IjkxNiIgeTI9IjMwMC4wIiBzdHJva2U9IiNFN0VDRjUiLz48dGV4dCB4PSI2MiIgeT0iMzA0LjAiIHRleHQtYW5jaG9yPSJlbmQiIGNsYXNzPSJheGlzIj4yMDA8L3RleHQ+PGxpbmUgeDE9Ijc0IiB5MT0iMjA0LjAiIHgyPSI5MTYiIHkyPSIyMDQuMCIgc3Ryb2tlPSIjRTdFQ0Y1Ii8+PHRleHQgeD0iNjIiIHk9IjIwOC4wIiB0ZXh0LWFuY2hvcj0iZW5kIiBjbGFzcz0iYXhpcyI+NDAwPC90ZXh0PjxsaW5lIHgxPSI3NCIgeTE9IjEwOC4wIiB4Mj0iOTE2IiB5Mj0iMTA4LjAiIHN0cm9rZT0iI0U3RUNGNSIvPjx0ZXh0IHg9IjYyIiB5PSIxMTIuMCIgdGV4dC1hbmNob3I9ImVuZCIgY2xhc3M9ImF4aXMiPjYwMDwvdGV4dD48L2c+CiAgPGxpbmUgeDE9Ijc0IiB5MT0iMzk2IiB4Mj0iOTE2IiB5Mj0iMzk2IiBzdHJva2U9IiNDQkQ1RTEiLz4KICA8Zz48cmVjdCB4PSIxNjEuNCIgeT0iMzE3LjYiIHdpZHRoPSI0NiIgaGVpZ2h0PSI3OC40IiByeD0iOCIgZmlsbD0iIzI0NkJGRSIgb3BhY2l0eT0iLjg4Ii8+PHJlY3QgeD0iMjIxLjIiIHk9IjExNC4xIiB3aWR0aD0iNDYiIGhlaWdodD0iMjgxLjkiIHJ4PSI4IiBmaWxsPSIjNzFBN0ZGIiBvcGFjaXR5PSIuOTIiLz48dGV4dCB4PSIxODQuNCIgeT0iMzA5LjYiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGNsYXNzPSJ2YWx1ZSI+MTYzPC90ZXh0Pjx0ZXh0IHg9IjI0NC4yIiB5PSIxMDYuMSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgY2xhc3M9InZhbHVlIj41ODc8L3RleHQ+PHJlY3QgeD0iNDQyLjEiIHk9IjMyMC40IiB3aWR0aD0iNDYiIGhlaWdodD0iNzUuNiIgcng9IjgiIGZpbGw9IiMyNDZCRkUiIG9wYWNpdHk9Ii44OCIvPjxyZWN0IHg9IjUwMS45IiB5PSIxMjEuOSIgd2lkdGg9IjQ2IiBoZWlnaHQ9IjI3NC4xIiByeD0iOCIgZmlsbD0iIzcxQTdGRiIgb3BhY2l0eT0iLjkyIi8+PHRleHQgeD0iNDY1LjEiIHk9IjMxMi40IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBjbGFzcz0idmFsdWUiPjE1ODwvdGV4dD48dGV4dCB4PSI1MjQuOSIgeT0iMTEzLjkiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGNsYXNzPSJ2YWx1ZSI+NTcxPC90ZXh0PjxyZWN0IHg9IjcyMi44IiB5PSIyNjcuMyIgd2lkdGg9IjQ2IiBoZWlnaHQ9IjEyOC43IiByeD0iOCIgZmlsbD0iIzI0NkJGRSIgb3BhY2l0eT0iLjg4Ii8+PHJlY3QgeD0iNzgyLjYiIHk9IjEzMC42IiB3aWR0aD0iNDYiIGhlaWdodD0iMjY1LjQiIHJ4PSI4IiBmaWxsPSIjNzFBN0ZGIiBvcGFjaXR5PSIuOTIiLz48dGV4dCB4PSI3NDUuOCIgeT0iMjU5LjMiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGNsYXNzPSJ2YWx1ZSI+MjY4PC90ZXh0Pjx0ZXh0IHg9IjgwNS42IiB5PSIxMjIuNiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgY2xhc3M9InZhbHVlIj41NTM8L3RleHQ+PC9nPgogIDxwYXRoIGQ9Ik0gMTg0LjQgMzcwLjkgTCA0NjUuMSAzMTEuMSBMIDc0NS44IDEwMy44IiBmaWxsPSJub25lIiBzdHJva2U9IiNGMDY0NDkiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+PGNpcmNsZSBjeD0iMTg0LjQiIGN5PSIzNzAuOSIgcj0iNS41IiBmaWxsPSIjRjA2NDQ5Ii8+PHRleHQgeD0iMTg0LjQiIHk9IjM1Ni45IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBjbGFzcz0ibWFyZ2luIj4tNy4zJTwvdGV4dD48Y2lyY2xlIGN4PSI0NjUuMSIgY3k9IjMxMS4xIiByPSI1LjUiIGZpbGw9IiNGMDY0NDkiLz48dGV4dCB4PSI0NjUuMSIgeT0iMjk3LjEiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGNsYXNzPSJtYXJnaW4iPjMuOCU8L3RleHQ+PGNpcmNsZSBjeD0iNzQ1LjgiIGN5PSIxMDMuOCIgcj0iNS41IiBmaWxsPSIjRjA2NDQ5Ii8+PHRleHQgeD0iNzQ1LjgiIHk9Ijg5LjgiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGNsYXNzPSJtYXJnaW4iPjQyLjMlPC90ZXh0PgogIDxwYXRoIGQ9Ik0gMjQ0LjIgMjc4LjggTCA1MjQuOSAyNjkuNSBMIDgwNS42IDI2MC44IiBmaWxsPSJub25lIiBzdHJva2U9IiMyM0EzNkQiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+PGNpcmNsZSBjeD0iMjQ0LjIiIGN5PSIyNzguOCIgcj0iNS41IiBmaWxsPSIjMjNBMzZEIi8+PHRleHQgeD0iMjQ0LjIiIHk9IjMwMi44IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBjbGFzcz0iZ3JlZW4iPjkuOCU8L3RleHQ+PGNpcmNsZSBjeD0iNTI0LjkiIGN5PSIyNjkuNSIgcj0iNS41IiBmaWxsPSIjMjNBMzZEIi8+PHRleHQgeD0iNTI0LjkiIHk9IjI5My41IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBjbGFzcz0iZ3JlZW4iPjExLjUlPC90ZXh0PjxjaXJjbGUgY3g9IjgwNS42IiBjeT0iMjYwLjgiIHI9IjUuNSIgZmlsbD0iIzIzQTM2RCIvPjx0ZXh0IHg9IjgwNS42IiB5PSIyODQuOCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgY2xhc3M9ImdyZWVuIj4xMy4xJTwvdGV4dD4KICA8Zz48dGV4dCB4PSIyMTQuMyIgeT0iNDMwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBjbGFzcz0iYXhpcyI+NS4xLTUuNzwvdGV4dD48dGV4dCB4PSI0OTUuMCIgeT0iNDMwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBjbGFzcz0iYXhpcyI+Ni4xOC02LjI0PC90ZXh0Pjx0ZXh0IHg9Ijc3NS43IiB5PSI0MzAiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGNsYXNzPSJheGlzIj42LjI1LTcuMTwvdGV4dD48L2c+CiAgPHRleHQgeD0iNzQiIHk9IjQ1MiIgY2xhc3M9ImF4aXMiPuaUtuWFpeWNleS9je+8muS4h+WFg++8m+avm+WIqeeOh+aMieWQhOaooeWdl+WPo+W+hOWxleekuuOAgumAieWPliA15pyI5Yid44CBNuaciOS4reaXrOS9jueCueOAgTbmnIjmnKvmnIDmlrDlkajmnJ/lkYjnjrDlj5jljJbjgII8L3RleHQ+Cjwvc3ZnPg==" alt="自建和第三方损益拆解图" /></div>
+        <div class="chart-card">
+          <h3 style="margin-top:0;">模块拆解</h3>
+          <p><strong>自建部分：</strong>5.1-5.7 毛利率为 -7.33%，处于亏损状态；6.18-6.24 已回到 3.79%；6.25-7.1 提升到 42.31%，收入 268.11 万、毛利 113.43 万，是最新周期毛利提升的主要来源。</p>
+          <p><strong>第三方部分：</strong>5.1-5.7 毛利率为 9.79%，6.18-6.24 为 11.52%，6.25-7.1 为 13.14%；收入规模从 587.35 万到 552.88 万小幅回落，但毛利从 57.52 万提升到 72.63 万，体现为较稳的毛利率改善。</p>
+          <p class="note">拆解图选取 5 月初、6 月中旬低点、6 月末最新周期，用于呈现自建和第三方两个模块的方向性变化。</p>
+        </div>
+      </div>
+    </section>
+
+    <section data-contract-section="visual-evidence">
+      <h2>资源调度：从内部能力到运营策略落地</h2>
+      <p><strong>5 月发起损益提升的目标之后，精细化调度能力和运营策略同步落地。</strong> 核心能力包括：闲时调度能力、支持按水位削峰、基于损益测算的调度策略。</p>
+      <div class="flow">
+        <div>闲时<br/>调度能力</div>
+        <div>按水位<br/>削峰</div>
+        <div>损益测算<br/>驱动策略</div>
+        <div>TPM 限流<br/>优化</div>
+        <div>计量计费<br/>闭环</div>
+      </div>
+      <table>
+        <thead><tr><th>能力模块</th><th>产品力实现与运营策略</th><th>损益达成效果</th></tr></thead>
+        <tbody>
+          <tr><td>闲时调度能力</td><td>4 月支持闲忙时差异化定价，支持 0:00-8:00 闲时调用配置；5 月围绕夜间自建可分配空间做闲时资源调整，并以“调整后自建占比 - 调整前自建占比”核算净增收益用量。</td><td><div class="impact"><span class="metric"><b>67.99 万</b>单周收益峰值</span><span class="caption">5.16-5.22 闲时累计新增调用 1173 亿 token；5.10-5.15 已实现约 37.75 万收益。</span></div></td></tr>
+          <tr><td>支持按水位削峰</td><td>3 月补齐自建集群水位监控与告警；5 月按历史高峰评估水位，高水位部分外溢，剩余机器在其他时间段承接更多调用；6 月补充长文本负载分发控制。</td><td><div class="impact"><span class="metric"><b>42.31%</b>自建毛利率</span><span class="caption">6.25-7.1 自建收入 268.11 万、毛利 113.43 万，低谷资源利用率提升。</span></div></td></tr>
+          <tr><td>TPM 限流优化</td><td>5 月支持专属路由限流白屏化、个人账户限流配置、最后修改人与历史记录；6 月支持专属路由 RPM 限流，并将限流配置与资源水位、路由策略联动。</td><td><div class="impact"><span class="metric"><b>更精细</b>流量承接</span><span class="caption">减少高峰挤占和无效资源占用，为闲时承接、削峰和自动化调度提供控制手段。</span></div></td></tr>
+          <tr><td>基于损益测算的调度策略</td><td>5 月开始将自建净增收入、外部成本减少、闲时调用量纳入策略核算；路由改造、session 保持、自动化切流一期陆续推进，让策略可执行、可回退、可持续跟踪。</td><td><div class="impact"><span class="metric"><b>+114.27 万</b>整体毛利</span><span class="caption">6.25-7.1 整体毛利从上一周期 71.79 万提升到 186.06 万，毛利率提升至 22.66%。</span></div></td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section data-contract-section="visual-evidence">
+      <h2>运营效果：闲时资源能力已经形成可量化收益</h2>
+      <p><strong>闲时资源调整是目前最清晰、可核算的产品能力应用结果。</strong> 收益核算逻辑为：按调整后自建调用量乘以“调整后自建占比 - 调整前自建占比”计算净增收益用量，已调整但未经新增调整的夜间自建调用不计入收益。</p>
+      <div class="chart-card"><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA5ODAgNDYwIiByb2xlPSJpbWciIGFyaWEtbGFiZWw9IumXsuaXtuWUruWNluaUtuebiuaLhuinoyI+CiAgPHN0eWxlPgogICAgdGV4dCB7IGZvbnQtZmFtaWx5OiAtYXBwbGUtc3lzdGVtLCBCbGlua01hY1N5c3RlbUZvbnQsICdQaW5nRmFuZyBTQycsICdNaWNyb3NvZnQgWWFIZWknLCBBcmlhbCwgc2Fucy1zZXJpZjsgfQogICAgLnRpdGxlIHsgZm9udC1zaXplOiAyNHB4OyBmb250LXdlaWdodDogODAwOyBmaWxsOiAjMTcyMDMzOyB9CiAgICAuYXhpcyB7IGZvbnQtc2l6ZTogMTNweDsgZmlsbDogIzY2NzA4NTsgfQogICAgLnZhbHVlIHsgZm9udC1zaXplOiAxNXB4OyBmb250LXdlaWdodDogODAwOyBmaWxsOiAjMTcyMDMzOyB9CiAgICAubGVnZW5kIHsgZm9udC1zaXplOiAxNHB4OyBmaWxsOiAjMzQ0MDU0OyB9CiAgPC9zdHlsZT4KICA8cmVjdCB3aWR0aD0iOTgwIiBoZWlnaHQ9IjQ2MCIgcng9IjE4IiBmaWxsPSIjZmZmZmZmIi8+CiAgPHRleHQgeD0iMjQiIHk9IjM0IiBjbGFzcz0idGl0bGUiPumXsuaXtuWUruWNluaUtuebiuaLhuinozwvdGV4dD4KICA8ZyB0cmFuc2Zvcm09InRyYW5zbGF0ZSg1MjAsMjIpIj4KICAgIDxyZWN0IHg9IjAiIHk9IjAiIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiIgcng9IjQiIGZpbGw9IiMyNDZCRkUiLz48dGV4dCB4PSIyMyIgeT0iMTMiIGNsYXNzPSJsZWdlbmQiPuiHquW7uuWHgOWinuaUtuWFpTwvdGV4dD4KICAgIDxyZWN0IHg9IjEzNCIgeT0iMCIgd2lkdGg9IjE2IiBoZWlnaHQ9IjE2IiByeD0iNCIgZmlsbD0iIzIzQTM2RCIvPjx0ZXh0IHg9IjE1NyIgeT0iMTMiIGNsYXNzPSJsZWdlbmQiPuS4ieaWueWHj+WwkeaIkOacrDwvdGV4dD4KICAgIDxsaW5lIHgxPSIyODIiIHkxPSI4IiB4Mj0iMzA2IiB5Mj0iOCIgc3Ryb2tlPSIjRjU5RTBCIiBzdHJva2Utd2lkdGg9IjQiLz48dGV4dCB4PSIzMTMiIHk9IjEzIiBjbGFzcz0ibGVnZW5kIj7mgLvmlLbnm4o8L3RleHQ+CiAgPC9nPgogIDxnPjxsaW5lIHgxPSI3NCIgeTE9IjM5MC4wIiB4Mj0iOTMyIiB5Mj0iMzkwLjAiIHN0cm9rZT0iI0U3RUNGNSIvPjx0ZXh0IHg9IjYyIiB5PSIzOTQuMCIgdGV4dC1hbmNob3I9ImVuZCIgY2xhc3M9ImF4aXMiPjA8L3RleHQ+PGxpbmUgeDE9Ijc0IiB5MT0iMzEzLjQiIHgyPSI5MzIiIHkyPSIzMTMuNCIgc3Ryb2tlPSIjRTdFQ0Y1Ii8+PHRleHQgeD0iNjIiIHk9IjMxNy40IiB0ZXh0LWFuY2hvcj0iZW5kIiBjbGFzcz0iYXhpcyI+MjA8L3RleHQ+PGxpbmUgeDE9Ijc0IiB5MT0iMjM2LjgiIHgyPSI5MzIiIHkyPSIyMzYuOCIgc3Ryb2tlPSIjRTdFQ0Y1Ii8+PHRleHQgeD0iNjIiIHk9IjI0MC44IiB0ZXh0LWFuY2hvcj0iZW5kIiBjbGFzcz0iYXhpcyI+NDA8L3RleHQ+PGxpbmUgeDE9Ijc0IiB5MT0iMTYwLjIiIHgyPSI5MzIiIHkyPSIxNjAuMiIgc3Ryb2tlPSIjRTdFQ0Y1Ii8+PHRleHQgeD0iNjIiIHk9IjE2NC4yIiB0ZXh0LWFuY2hvcj0iZW5kIiBjbGFzcz0iYXhpcyI+NjA8L3RleHQ+PGxpbmUgeDE9Ijc0IiB5MT0iODMuNyIgeDI9IjkzMiIgeTI9IjgzLjciIHN0cm9rZT0iI0U3RUNGNSIvPjx0ZXh0IHg9IjYyIiB5PSI4Ny43IiB0ZXh0LWFuY2hvcj0iZW5kIiBjbGFzcz0iYXhpcyI+ODA8L3RleHQ+PC9nPgogIDxsaW5lIHgxPSI3NCIgeTE9IjM5MCIgeDI9IjkzMiIgeTI9IjM5MCIgc3Ryb2tlPSIjQ0JENUUxIi8+CiAgPGc+PHJlY3QgeD0iMTYzLjAiIHk9IjMwNy42IiB3aWR0aD0iMTA4IiBoZWlnaHQ9IjgyLjQiIHJ4PSI4IiBmaWxsPSIjMjQ2QkZFIi8+PHJlY3QgeD0iMTYzLjAiIHk9IjI0Ni44IiB3aWR0aD0iMTA4IiBoZWlnaHQ9IjYwLjgiIHJ4PSI4IiBmaWxsPSIjMjNBMzZEIi8+PHJlY3QgeD0iNDQ5LjAiIHk9IjI0MS4zIiB3aWR0aD0iMTA4IiBoZWlnaHQ9IjE0OC43IiByeD0iOCIgZmlsbD0iIzI0NkJGRSIvPjxyZWN0IHg9IjQ0OS4wIiB5PSIxMjkuNyIgd2lkdGg9IjEwOCIgaGVpZ2h0PSIxMTEuNyIgcng9IjgiIGZpbGw9IiMyM0EzNkQiLz48cmVjdCB4PSI3MzUuMCIgeT0iMzEyLjkiIHdpZHRoPSIxMDgiIGhlaWdodD0iNzcuMSIgcng9IjgiIGZpbGw9IiMyNDZCRkUiLz48cmVjdCB4PSI3MzUuMCIgeT0iMjUwLjAiIHdpZHRoPSIxMDgiIGhlaWdodD0iNjIuOSIgcng9IjgiIGZpbGw9IiMyM0EzNkQiLz48L2c+CiAgPHBhdGggZD0iTSAyMTcuMCAyNDUuNCBMIDUwMy4wIDEyOS43IEwgNzg5LjAgMjUwLjAiIGZpbGw9Im5vbmUiIHN0cm9rZT0iI0Y1OUUwQiIgc3Ryb2tlLXdpZHRoPSI0IiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz48Y2lyY2xlIGN4PSIyMTcuMCIgY3k9IjI0NS40IiByPSI2IiBmaWxsPSIjRjU5RTBCIi8+PGNpcmNsZSBjeD0iNTAzLjAiIGN5PSIxMjkuNyIgcj0iNiIgZmlsbD0iI0Y1OUUwQiIvPjxjaXJjbGUgY3g9Ijc4OS4wIiBjeT0iMjUwLjAiIHI9IjYiIGZpbGw9IiNGNTlFMEIiLz4KICA8Zz48dGV4dCB4PSIyMTcuMCIgeT0iNDI0IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBjbGFzcz0iYXhpcyI+NS4xMC01LjE1PC90ZXh0Pjx0ZXh0IHg9IjIxNy4wIiB5PSIyMzIuNCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgY2xhc3M9InZhbHVlIj4zNy445LiHPC90ZXh0Pjx0ZXh0IHg9IjUwMy4wIiB5PSI0MjQiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGNsYXNzPSJheGlzIj41LjE2LTUuMjI8L3RleHQ+PHRleHQgeD0iNTAzLjAiIHk9IjExNi43IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBjbGFzcz0idmFsdWUiPjY4LjDkuIc8L3RleHQ+PHRleHQgeD0iNzg5LjAiIHk9IjQyNCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgY2xhc3M9ImF4aXMiPjUuMjMtNS4yODwvdGV4dD48dGV4dCB4PSI3ODkuMCIgeT0iMjM3LjAiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGNsYXNzPSJ2YWx1ZSI+MzYuNeS4hzwvdGV4dD48L2c+Cjwvc3ZnPg==" alt="闲时售卖收益拆解图" /></div>
+      <p class="note">解读：5.16-5.22 收益达到 67.99 万；5.23-5.28 回落，说明闲时资源能力要继续依赖稳定的夜间调用、准确水位和自动化调度能力。</p>
+    </section>
+
+    <section data-contract-section="visual-evidence">
+      <h2>产品能力基础：推理吞吐提升降低单位资源成本</h2>
+      <p><strong>损益提升不仅来自调度策略，也来自推理吞吐能力提升。</strong> 5 到 6 月多模型推理能力持续优化：K2.5 提升约 130%，glm-5 提升约 58%，glm-5.1 提升约 88%，deepseek-v3.2 提升约 100%。</p>
+      <div class="chart-card"><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA5ODAgNDMwIiByb2xlPSJpbWciIGFyaWEtbGFiZWw9IuaOqOeQhuWQnuWQkOiDveWKm+aPkOWNhyI+CiAgPHN0eWxlPgogICAgdGV4dCB7IGZvbnQtZmFtaWx5OiAtYXBwbGUtc3lzdGVtLCBCbGlua01hY1N5c3RlbUZvbnQsICdQaW5nRmFuZyBTQycsICdNaWNyb3NvZnQgWWFIZWknLCBBcmlhbCwgc2Fucy1zZXJpZjsgfQogICAgLnRpdGxlIHsgZm9udC1zaXplOiAyNHB4OyBmb250LXdlaWdodDogODAwOyBmaWxsOiAjMTcyMDMzOyB9CiAgICAuYXhpcyB7IGZvbnQtc2l6ZTogMTNweDsgZmlsbDogIzY2NzA4NTsgfQogICAgLmxhYmVsIHsgZm9udC1zaXplOiAxNXB4OyBmb250LXdlaWdodDogNzAwOyBmaWxsOiAjMzQ0MDU0OyB9CiAgICAudmFsdWUgeyBmb250LXNpemU6IDE1cHg7IGZvbnQtd2VpZ2h0OiA4MDA7IGZpbGw6ICMxNzIwMzM7IH0KICA8L3N0eWxlPgogIDxyZWN0IHdpZHRoPSI5ODAiIGhlaWdodD0iNDMwIiByeD0iMTgiIGZpbGw9IiNmZmZmZmYiLz4KICA8dGV4dCB4PSIyNCIgeT0iMzQiIGNsYXNzPSJ0aXRsZSI+5o6o55CG5ZCe5ZCQ6IO95Yqb5o+Q5Y2H5bmF5bqmPC90ZXh0PgogIDxnPjxsaW5lIHgxPSIxOTAuMCIgeTE9Ijc4IiB4Mj0iMTkwLjAiIHkyPSIzODYiIHN0cm9rZT0iI0U3RUNGNSIvPjx0ZXh0IHg9IjE5MC4wIiB5PSI0MTQiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGNsYXNzPSJheGlzIj4wJTwvdGV4dD48bGluZSB4MT0iMzczLjAiIHkxPSI3OCIgeDI9IjM3My4wIiB5Mj0iMzg2IiBzdHJva2U9IiNFN0VDRjUiLz48dGV4dCB4PSIzNzMuMCIgeT0iNDE0IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBjbGFzcz0iYXhpcyI+MzUlPC90ZXh0PjxsaW5lIHgxPSI1NTYuMCIgeTE9Ijc4IiB4Mj0iNTU2LjAiIHkyPSIzODYiIHN0cm9rZT0iI0U3RUNGNSIvPjx0ZXh0IHg9IjU1Ni4wIiB5PSI0MTQiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGNsYXNzPSJheGlzIj43MCU8L3RleHQ+PGxpbmUgeDE9IjczOS4wIiB5MT0iNzgiIHgyPSI3MzkuMCIgeTI9IjM4NiIgc3Ryb2tlPSIjRTdFQ0Y1Ii8+PHRleHQgeD0iNzM5LjAiIHk9IjQxNCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgY2xhc3M9ImF4aXMiPjEwNSU8L3RleHQ+PGxpbmUgeDE9IjkyMi4wIiB5MT0iNzgiIHgyPSI5MjIuMCIgeTI9IjM4NiIgc3Ryb2tlPSIjRTdFQ0Y1Ii8+PHRleHQgeD0iOTIyLjAiIHk9IjQxNCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgY2xhc3M9ImF4aXMiPjE0MCU8L3RleHQ+PC9nPgogIDxnPjx0ZXh0IHg9IjE3MiIgeT0iMTE2LjEiIHRleHQtYW5jaG9yPSJlbmQiIGNsYXNzPSJsYWJlbCI+SzIuNTwvdGV4dD48cmVjdCB4PSIxOTAiIHk9Ijk0LjkiIHdpZHRoPSI2NzkuNyIgaGVpZ2h0PSIzMi4zIiByeD0iMTAiIGZpbGw9IiMzNTVDRkYiLz48dGV4dCB4PSI4ODEuNyIgeT0iMTE2LjEiIGNsYXNzPSJ2YWx1ZSI+KzEzMCU8L3RleHQ+PHRleHQgeD0iMTcyIiB5PSIxOTMuMSIgdGV4dC1hbmNob3I9ImVuZCIgY2xhc3M9ImxhYmVsIj5nbG0tNTwvdGV4dD48cmVjdCB4PSIxOTAiIHk9IjE3MS45IiB3aWR0aD0iMzAzLjMiIGhlaWdodD0iMzIuMyIgcng9IjEwIiBmaWxsPSIjMzU1Q0ZGIi8+PHRleHQgeD0iNTA1LjMiIHk9IjE5My4xIiBjbGFzcz0idmFsdWUiPis1OCU8L3RleHQ+PHRleHQgeD0iMTcyIiB5PSIyNzAuMSIgdGV4dC1hbmNob3I9ImVuZCIgY2xhc3M9ImxhYmVsIj5nbG0tNS4xPC90ZXh0PjxyZWN0IHg9IjE5MCIgeT0iMjQ4LjkiIHdpZHRoPSI0NjAuMSIgaGVpZ2h0PSIzMi4zIiByeD0iMTAiIGZpbGw9IiMzNTVDRkYiLz48dGV4dCB4PSI2NjIuMSIgeT0iMjcwLjEiIGNsYXNzPSJ2YWx1ZSI+Kzg4JTwvdGV4dD48dGV4dCB4PSIxNzIiIHk9IjM0Ny4xIiB0ZXh0LWFuY2hvcj0iZW5kIiBjbGFzcz0ibGFiZWwiPmRlZXBzZWVrLXYzLjI8L3RleHQ+PHJlY3QgeD0iMTkwIiB5PSIzMjUuOSIgd2lkdGg9IjUyMi45IiBoZWlnaHQ9IjMyLjMiIHJ4PSIxMCIgZmlsbD0iIzM1NUNGRiIvPjx0ZXh0IHg9IjcyNC45IiB5PSIzNDcuMSIgY2xhc3M9InZhbHVlIj4rMTAwJTwvdGV4dD48L2c+CiAgPHRleHQgeD0iMTkwIiB5PSI0MTYiIGNsYXNzPSJheGlzIj7mjInkvJjljJbliY3lkI7og73lipvmj5DljYfmr5TkvovlsZXnpLrvvIzkuI3lkYjnjrDnu53lr7kgVFBNIOaVsOWAvOOAgjwvdGV4dD4KPC9zdmc+" alt="推理吞吐能力提升图" /></div>
+      <p class="note">解读：吞吐提升意味着同等资源可承接更多调用，为闲时资源调整、削峰和自建毛利率提升提供基础。</p>
+    </section>
+
+    <section data-contract-section="closing">
+      <h2>总结、展望与致谢</h2>
+      <p><strong>上半年，模型 API 服务完成了从模型中转到企业级调用平台的关键能力补齐。</strong> 模型生态、接入点治理、权限额度、计量透明、协议兼容和精细化调度共同构成了产品力底座。</p>
+      <p><strong>下半年重点是把这些能力进一步做稳、做自动、做精细。</strong> 一方面继续提升模型接入和协议兼容效率，另一方面重点优化大规模用量产生后的用户出账和供应商出账准确性，同时推进多集群、多 provider 的精细化管理和调度，让产品能力持续反映到经营质量上。</p>
+      <div class="thanks-card">
+        <strong>感谢团队内每一位同学</strong>
+        <p>感谢大家在上半年模型接入、网关治理、成本核算、调度策略和稳定性保障上的持续投入。</p>
+      </div>
+    </section>
+  </main>
+</body>
+</html>
